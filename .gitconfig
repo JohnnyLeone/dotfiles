@@ -176,7 +176,7 @@
 	signingkey = 0x92766910317a1edb
 
 [github]
-	user = ahirschauer
+	user = johnnyleone
 
 [commit]
 	gpgsign = true
