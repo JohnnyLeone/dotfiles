@@ -63,7 +63,7 @@ autoload -U compinit && compinit -u
 
 # User configuration
 
-export PATH="/Users/Andreas/.nexustools:/usr/local/share/dotnet:/usr/local/go/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/usr/local/share/dotnet:/usr/local/go/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 # export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
@@ -100,5 +100,5 @@ alias pingg="ping -c 4 www.google.com"
 alias make50="clang -ggdb3 -O0 -std=c99 -Wall -Werror -lcs50 -lm -o"
 
 # nvm
-export NVM_DIR="/Users/Andreas/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+export NVM_DIR="$HOME/.nvm"
+. "$(brew --prefix nvm)/nvm.sh"
