@@ -64,7 +64,7 @@ set ignorecase                  " Search case insensitive...
 set smartcase                   " ... but not when search pattern contains upper case characters
 set ttyfast
 set ttyscroll=3                 " noop on linux ?
-set lazyredraw          	      " Wait to redraw "
+set lazyredraw                  " Wait to redraw "
 
 " speed up syntax highlighting
 set nocursorcolumn
@@ -116,7 +116,7 @@ else
 endif
 
 " ----------------------------------------- "
-" Plugin configs 			    			"
+" Plugin config                             "
 " ----------------------------------------- "
 
 " ==================== Vim-go ====================
@@ -170,6 +170,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " ==================== Theme ====================
 syntax on
 let g:airline_powerline_fonts=1
-let g:airline_theme='dracula'
+let g:airline_theme='promptline'
 let g:airline#extensions#tabline#enabled = 1
 " let g:colorizer_auto_color=1

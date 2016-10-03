@@ -1,6 +1,6 @@
-.PHONY: all bin dotfiles
+.PHONY: all bin dotfiles etc
 
-all: bin dotfiles
+all: bin dotfiles etc
 
 bin:
 	# add aliases for things in bin
@@ -17,5 +17,13 @@ dotfiles:
 		ln -sfn $$file $(HOME)/$$f; \
 	done; \
 	ln -sfn $(CURDIR)/.gnupg/gpg.conf $(HOME)/.gnupg/gpg.conf;
+	ln -sfn $(CURDIR)/.gnupg/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf;
 	ln -fn $(CURDIR)/gitignore $(HOME)/.gitignore;
-	ln -s $(CURDIR)/SpotifyControl/SpotifyControl /usr/local/bin/spotify
+
+etc:
+	for file in $(shell find $(CURDIR)/etc -type f -not -name ".*.swp"); do \
+		f=$$(echo $$file | sed -e 's|$(CURDIR)||'); \
+		sudo ln -f $$file $$f; \
+	done
+	systemctl --user daemon-reload
+	sudo systemctl daemon-reload

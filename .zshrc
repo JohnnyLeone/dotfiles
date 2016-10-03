@@ -7,13 +7,13 @@ done
 unset file
 
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/ahirschauer/.oh-my-zsh
+export ZSH=/home/ahirschauer/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="agnoster"
+ZSH_THEME="steeef"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -57,7 +57,7 @@ ZSH_THEME="agnoster"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(… zsh-completions git)
+plugins=(… zsh-syntax-highlighting zsh-completions git)
 
 autoload -U compinit && compinit -u
 
@@ -92,7 +92,6 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 alias pingg="ping -c 4 www.google.com"
 
 #export CC=clang
@@ -100,5 +99,5 @@ alias pingg="ping -c 4 www.google.com"
 alias make50="clang -ggdb3 -O0 -std=c99 -Wall -Werror -lcs50 -lm -o"
 
 # nvm
-export NVM_DIR="$HOME/.nvm"
-. "$(brew --prefix nvm)/nvm.sh"
+export NVM_DIR="/home/ahirschauer/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
