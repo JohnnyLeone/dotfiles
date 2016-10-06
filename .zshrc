@@ -92,6 +92,10 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# solves error: "gpg: signing failed: Inappropriate ioctl for device"
+export GPG_TTY=$(tty)
+
 alias pingg="ping -c 4 www.google.com"
 
 #export CC=clang
