@@ -96,12 +96,6 @@ source $ZSH/oh-my-zsh.sh
 # solves error: "gpg: signing failed: Inappropriate ioctl for device"
 export GPG_TTY=$(tty)
 
-alias pingg="ping -c 4 www.google.com"
-
-#export CC=clang
-#export CFLAGS="-ggdb3 -O0 -std=c99 -Wall -Werror -lcs50 -lm"
-alias make50="clang -ggdb3 -O0 -std=c99 -Wall -Werror -lcs50 -lm -o"
-
 # nvm
 export NVM_DIR="/home/ahirschauer/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
