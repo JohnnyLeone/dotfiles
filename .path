@@ -2,4 +2,4 @@
 export GOPATH=$HOME/.go
 
 # update cdpath
-export CDPATH=.:$GOPATH/src/github.com:$GOPATH/src/golang.org:$GOPATH/src
+export CDPATH=${CDPATH}:$GOPATH/src/github.com:$GOPATH/src/golang.org:$GOPATH/src
