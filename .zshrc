@@ -63,7 +63,7 @@ autoload -U compinit && compinit -u
 
 # User configuration
 
-export PATH="/usr/local/share/dotnet:/usr/local/go/bin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/usr/local/go/bin:/home/ahirschauer/.go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
