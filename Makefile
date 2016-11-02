@@ -23,7 +23,7 @@ dotfiles:
 etc:
 	for file in $(shell find $(CURDIR)/etc -type f -not -name ".*.swp"); do \
 		f=$$(echo $$file | sed -e 's|$(CURDIR)||'); \
-		sudo ln -sf $$file $$f; \
+		sudo ln -f $$file $$f; \
 	done
 	systemctl --user daemon-reload
 	sudo systemctl daemon-reload
