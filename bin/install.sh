@@ -44,10 +44,12 @@ base() {
 		asciinema \
 		neovim \
 		jq \
+		ranger \
 		syncthing \
 		syncthing-inotify \
 		powertop \
 		xbacklight \
+		xcalib \
 		zsh
 
 	# install tlp with recommends
@@ -80,6 +82,10 @@ install_shell() {
 
 	# set zsh as default shell
 	chsh -s /bin/zsh ${USERNAME}
+
+	# install gdb-peda
+	git clone https://github.com/longld/peda.git /home/${USERNAME}/peda
+	echo "source /home/${USERNAME}/peda/peda.py" >> /home/${USERNAME}/.gdbinit
 }
 
 get_dotfiles() {
