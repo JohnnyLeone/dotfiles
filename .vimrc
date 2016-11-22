@@ -48,7 +48,8 @@ set splitbelow                  " Split horizontal windows below to the current 
 set encoding=utf-8              " Set default encoding to UTF-8
 set autowrite                   " Automatically save before :next, :make etc.
 set autoread                    " Automatically reread changed files without asking me anything
-set laststatus=2
+set laststatus=2		" Always display the statusline in all windows
+set showtabline=2		" Always display the tabline, even if there is only one tab
 set hidden
 
 set ruler                       " Show the cursor position all the time
@@ -57,7 +58,7 @@ au FocusLost * :wa              " Set vim to save the file on focus out.
 set fileformats=unix,dos,mac    " Prefer Unix over Windows over OS 9 formats
 
 set noshowmatch                 " Do not show matching brackets by flickering
-set noshowmode                  " We show the mode with airlien or lightline
+set noshowmode                  " We show the mode with airline or lightline
 set incsearch                   " Shows the match while typing
 set hlsearch                    " Highlight found searches
 set ignorecase                  " Search case insensitive...
@@ -170,6 +171,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " ==================== Theme ====================
 syntax on
 let g:airline_powerline_fonts=1
-let g:airline_theme='promptline'
+let g:airline_theme='simple'
 let g:airline#extensions#tabline#enabled = 1
 " let g:colorizer_auto_color=1
