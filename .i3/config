@@ -27,6 +27,9 @@ bindsym $mod+Return exec i3-sensible-terminal
 # start dmenu
 bindsym $mod+d exec i3-dmenu-desktop
 
+# start rofi
+bindsym $mod+Tab exec $nsi rofi -show "window" -font "Share 10" -bw "3"
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
@@ -199,7 +202,7 @@ bar {
 # set background
 # use the same background as slim (login manager)
 # this file is an alias to something in /home/jessie/Pictures
-exec --no-startup-id feh --bg-fill /usr/share/slim/themes/default/background.jpg
+exec --no-startup-id feh --bg-fill /usr/share/feh/images/data-center-ibm.jpg
 
 # run the merge for good colors
 exec xrdb -merge $HOME/.Xresources

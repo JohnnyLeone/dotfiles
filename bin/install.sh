@@ -68,8 +68,17 @@ base() {
 
 setup_sudo() {
 	# add user to systemd group
-	usermod -aG systemd-journal "$USERNAME"
-	usermod -aG systemd-network "$USERNAME"
+	gpasswd -a "$USERNAME" systemd-journal
+	gpasswd -a "$USERNAME" systemd-network
+
+	# add go path to secure path
+	{ \
+		echo -e 'Defaults	secure_path="/usr/local/go/bin:/home/ahirschauer/.go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"'; 
+\
+		echo -e 'Defaults	env_keep += "ftp_proxy http_proxy https_proxy no_proxy GOPATH EDITOR"'; \
+		echo -e "${USERNAME} ALL=(ALL) NOPASSWD:ALL"; \
+		echo -e "${USERNAME} ALL=NOPASSWD: /sbin/ifconfig, /sbin/ifup, /sbin/ifdown, /sbin/ifquery"; \
+	} >> /etc/sudoers
 }
 
 install_shell() {
@@ -156,25 +165,6 @@ install_syncthing() {
 
 # install/update golang from source
 install_golang() {
-	export GO_VERSION=1.7.3
-	export GO_SRC=/usr/local/go
-
-	# if we are passing the version
-	if [[ ! -z "$1" ]]; then
-		export GO_VERSION=$1
-	fi
-
-	# purge old src
-	if [[ -d "$GO_SRC" ]]; then
-		sudo rm -rf "$GO_SRC"
-		sudo rm -rf "$GOPATH"
-	fi
-
-	# subshell because we `cd`
-	(
-	curl -sSL "https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz" | sudo tar -v -C /usr/local -xz
-	)
-
 	# get commandline tools
 	(
 	set -x
@@ -289,7 +279,7 @@ main() {
 	elif [[ $cmd == "wm" ]]; then
 		check_is_sudo
 
-		install_wmapps
+		setup_sudo
 	elif [[ $cmd == "shell" ]]; then
 		install_shell
 	elif [[ $cmd == "dotfiles" ]]; then
