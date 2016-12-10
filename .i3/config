@@ -63,7 +63,7 @@ bindsym $mod+l exec i3lock -c 111111
 # change focus
 bindsym $mod+j focus left
 bindsym $mod+k focus down
-bindsym $mod+semicolon focus right
+bindsym $mod+odiaeresis focus right
 
 # move to monitor
 bindsym $mod+Shift+Left move workspace to output left
