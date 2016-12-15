@@ -238,9 +238,6 @@ firefox(){
 		--device /dev/dri \
 		--name firefox \
 		${DOCKER_REPO_PREFIX}/firefox "$@"
-
-	# exit current shell
-	exit 0
 }
 gcalcli(){
 	docker run --rm -it \

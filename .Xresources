@@ -19,7 +19,7 @@
 *.color15:    #E6E6E6
 
 ! -- Fonts -- !
-URxvt.font: xft:Terminess Powerline:pixelsize=14:antialias=true:hinting=true
+URxvt.font: xft:Terminess Powerline:size=11:antialias=true:hinting=true
 
 !! scroll
 !! do not scroll with output
