@@ -1,35 +1,28 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'dracula/vim'
-Plugin 'chrisbra/Colorizer'
-Plugin 'scrooloose/nerdtree'
-Plugin 'majutsushi/tagbar'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'scrooloose/syntastic'
-Plugin 'kien/ctrlp.vim'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'tpope/vim-surround'
-Plugin 'wikitopian/hardmode'
-Plugin 'drmingdrmer/vim-syntax-markdown'
-Plugin 'fatih/vim-go'
-Plugin 'OmniSharp/omnisharp-vim'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
+
+call plug#begin('~/.local/share/nvim/plugged')
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'dracula/vim'
+Plug 'chrisbra/Colorizer'
+Plug 'scrooloose/nerdtree'
+Plug 'majutsushi/tagbar'
+Plug 'easymotion/vim-easymotion'
+Plug 'scrooloose/syntastic'
+Plug 'kien/ctrlp.vim'
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
+Plug 'tpope/vim-surround'
+Plug 'wikitopian/hardmode'
+Plug 'drmingdrmer/vim-syntax-markdown'
+Plug 'fatih/vim-go'
+Plug 'vim-ruby/vim-ruby'
+Plug 'OmniSharp/omnisharp-vim'
+
+call plug#end()			" required
 
 "
 " ==================== Settings ====================
@@ -64,7 +57,7 @@ set hlsearch                    " Highlight found searches
 set ignorecase                  " Search case insensitive...
 set smartcase                   " ... but not when search pattern contains upper case characters
 set ttyfast
-set ttyscroll=3                 " noop on linux ?
+" set ttyscroll=3                 " noop on linux ?
 set lazyredraw                  " Wait to redraw "
 
 " speed up syntax highlighting
@@ -170,7 +163,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 
 " ==================== Theme ====================
 syntax on
+let g:airline_theme='dracula'
 let g:airline_powerline_fonts=1
-let g:airline_theme='simple'
 let g:airline#extensions#tabline#enabled = 1
 " let g:colorizer_auto_color=1
