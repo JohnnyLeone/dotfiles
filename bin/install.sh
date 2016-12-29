@@ -32,16 +32,22 @@ base() {
 
 	# extra needed packages
 	pacman -S --needed --noconfirm \
+		acpi_call \
 		arc-gtk-theme \
 		arc-icon-theme \
 		asciinema \
+		dhclient \
+		dmenu \
+		ethtool \
 		jq \
 		lolcat \
-		neovim \
+		rxvt-unicode \
 		ranger \
+		smartmontools \
 		syncthing \
 		syncthing-inotify \
 		powertop \
+		x86_energy_perf_policy \
 		xorg-xbacklight \
 		zsh
 
@@ -74,7 +80,7 @@ setup_sudo() {
 	# that way things are removed on reboot
 	# i like things clean but you may not want this
 	mkdir -p "/home/$USERNAME/Downloads"
-	echo -e "\n# tmpfs for downloads\ntmpfs\t/home/${USERNAME}/Downloads\ttmpfs\tnodev,nosuid,size=2G\t0\t0" >> /etc/fstab
+	echo -e "\n# tmpfs for downloads\ntmpfs\t/home/${USERNAME}/Downloads\ttmpfs\tnodev,nosuid,size=5G\t0\t0" >> /etc/fstab
 }
 
 install_shell() {
@@ -115,13 +121,15 @@ get_dotfiles() {
 }
 
 install_vim() {
+        pacman -S --needed --noconfirm neovim python-neovim python2-neovim	
+
 	curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
 # installs docker
 install_docker() {
-	pacman -S docker
+	pacman -S --needed --noconfirm docker
 
 	usermod -aG docker "$USERNAME"
 
@@ -138,7 +146,7 @@ install_syncthing() {
 
 # install/update golang from source
 install_golang() {
-	sudo pacman -S go
+	sudo pacman -S --needed --noconfirm go go-tools
 
 	# get commandline tools
 	(
@@ -184,6 +192,7 @@ install_golang() {
 	go get github.com/shurcooL/gostatus
 	go get github.com/shurcooL/markdownfmt
 	go get github.com/Soulou/curl-unix-socket
+	)
 }
 
 install_kvm() {
@@ -204,7 +213,7 @@ usage() {
 	echo "  dotfiles                    - get dotfiles"
 	echo "  vim                         - install vim specific dotfiles"
 	echo "  golang                      - install golang and packages"
-	echo "  kvm                         - install kvm
+	echo "  kvm                         - install kvm"
 	echo "  syncthing                   - install syncthing"
 }
 
