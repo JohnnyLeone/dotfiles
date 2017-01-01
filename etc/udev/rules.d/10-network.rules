@@ -1,0 +1,5 @@
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="30:5a:3a:05:e8:b9", NAME="net0"
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="3c:97:03:86:93:26", NAME="net0"
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="14:dd:a9:2d:2d:81", NAME="wifi0"
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="84:3a:4b:ad:50:50", NAME="wifi0"
+
