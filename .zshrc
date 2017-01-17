@@ -61,11 +61,6 @@ plugins=(… zsh-syntax-highlighting zsh-completions git)
 
 autoload -U compinit && compinit -u
 
-# User configuration
-
-export PATH="/usr/local/go/bin:/home/ahirschauer/.go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-# export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
-
 source $ZSH/oh-my-zsh.sh
 
 # Preferred editor for local and remote sessions
@@ -109,3 +104,7 @@ fi
 # nvm
 export NVM_DIR="/home/ahirschauer/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# rvm
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
