@@ -1,5 +1,9 @@
 # go path
 export GOPATH=$HOME/.go
 
+# update path
+export PATH=$HOME/bin:/usr/local/bin:$GOPATH/bin:/sbin:$PATH
+# export MANPATH="/usr/local/man:$MANPATH"
+
 # update cdpath
 export CDPATH=${CDPATH}:$GOPATH/src/github.com:$GOPATH/src/golang.org:$GOPATH/src
