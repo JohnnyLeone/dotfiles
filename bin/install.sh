@@ -58,7 +58,6 @@ base() {
 
 	setup_sudo
 
-	install_shell
 	install_docker
 	install_syncthing
 }
@@ -121,7 +120,7 @@ get_dotfiles() {
 }
 
 install_vim() {
-        pacman -S --needed --noconfirm neovim python-neovim python2-neovim	
+	sudo pacman -S --needed --noconfirm neovim python-neovim python2-neovim	
 
 	curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -243,7 +242,7 @@ main() {
 		install_vim
 	elif [[ $cmd == "golang" ]]; then
 		install_golang "$2"
-    elif [[ $cmd == "kvm" ]]; then
+	elif [[ $cmd == "kvm" ]]; then
 		check_is_sudo
 
 		install_kvm

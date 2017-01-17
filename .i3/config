@@ -35,7 +35,7 @@ bindsym $mod+Shift+q kill
 
 # spotify: no border
 for_window [class="^Spotify$"] border none
-for_window [class="^Spotify Premium$"] border none
+for_window [class="^Discord$"] border none
 
 # skype, steam, wine: float Gimp
 for_window [class="Code"] floating enable
@@ -56,6 +56,7 @@ for_window [class="VirtualBox"] floating enable
 for_window [class="vlc"] floating enable
 for_window [class="Wine"] floating enable
 for_window [class="Wireshark"] floating enable
+for_window [class="Godot"] floating enable
 
 # lock screen
 bindsym $mod+l exec i3lock -c 111111
