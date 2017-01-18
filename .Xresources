@@ -46,6 +46,8 @@ URxvt.secondaryWheel:   1
 !! scrollbar
 *scrollBar:             false
 
+URxvt*termName:         rxvt-256color
+
 !! clickable urls
 URxvt.perl-ext-common:      default,matcher,selection-to-clipboard,clipboard
 URxvt.url-launcher:         /usr/bin/xdg-open
