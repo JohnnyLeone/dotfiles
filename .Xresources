@@ -18,6 +18,9 @@
 *.color7:     #BFBFBF
 *.color15:    #E6E6E6
 
+urxvt*transparent: true
+urxvt*shading: 10
+
 !-- Xft settings -- !
 Xft.dpi:        96
 Xft.rgba:       rgb

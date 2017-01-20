@@ -35,7 +35,7 @@ bindsym $mod+Shift+q kill
 
 # spotify: no border
 for_window [class="^Spotify$"] border none
-for_window [class="^Discord$"] border none
+for_window [class="^discord$"] border none
 
 # skype, steam, wine: float Gimp
 for_window [class="Code"] floating enable
@@ -57,6 +57,7 @@ for_window [class="vlc"] floating enable
 for_window [class="Wine"] floating enable
 for_window [class="Wireshark"] floating enable
 for_window [class="Godot"] floating enable
+for_window [class="GoPass"] floating enable
 
 # lock screen
 bindsym $mod+l exec i3lock -c 111111
@@ -203,7 +204,7 @@ bar {
 # set background
 # use the same background as slim (login manager)
 # this file is an alias to something in /home/jessie/Pictures
-exec --no-startup-id feh --bg-fill /usr/share/feh/images/data-center-ibm.jpg
+exec --no-startup-id feh --bg-fill /usr/share/feh/images/cp.jpg
 
 # run the merge for good colors
 exec xrdb -merge $HOME/.Xresources
