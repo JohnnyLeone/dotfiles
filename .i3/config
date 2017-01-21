@@ -26,9 +26,7 @@ bindsym $mod+Return exec i3-sensible-terminal
 
 # start dmenu
 bindsym $mod+d exec i3-dmenu-desktop
-
-# start rofi
-bindsym $mod+Tab exec $nsi rofi -show "window" -font "Share 10" -bw "3"
+bindsym $mod+p exec passmenu
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -57,7 +55,6 @@ for_window [class="vlc"] floating enable
 for_window [class="Wine"] floating enable
 for_window [class="Wireshark"] floating enable
 for_window [class="Godot"] floating enable
-for_window [class="GoPass"] floating enable
 
 # lock screen
 bindsym $mod+l exec i3lock -c 111111
