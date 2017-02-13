@@ -120,10 +120,24 @@ get_dotfiles() {
 }
 
 install_vim() {
-	sudo pacman -S --needed --noconfirm neovim python-neovim python2-neovim	
+	# install necessary packages
+	sudo pacman -S --needed --noconfirm vim neovim python-neovim python2-neovim	
 
-	curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+	# install my favorite plugin manager for neovim
+	curl -fLo /home/${USERNAME}/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+	# install vim-plug also for vim
+        curl -fLo /home/${USERNAME}/.local/share/nvim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+	# alias neovim dotfiles to vim
+	ln -sfn /home/${USERNAME}/.local/share/nvim /home/${USERNAME}/.vim
+
+	# alias neovim dotfiles for root
+	sudo mkdir -p /root/.config/nvim
+	sudo ln -sfn /home/${USERNAME}/.vimrc /root/.config/nvim/init.vim
+	sudo ln -sfn /home/${USERNAME}/.local/share/nvim /root/.local/share/nvim
 }
 
 # installs docker
