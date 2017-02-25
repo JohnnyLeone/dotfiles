@@ -64,7 +64,7 @@ set ttyfast
 " set ttyscroll=3                 " noop on linux ?
 set lazyredraw                  " Wait to redraw "
 
-" speed up syntax highlighting
+" Speed up syntax highlighting
 set nocursorcolumn
 set nocursorline
 
@@ -72,7 +72,7 @@ syntax sync minlines=256
 set synmaxcol=300
 set re=1
 
-" open help vertically
+" Open help vertically
 command! -nargs=* -complete=help Help vertical belowright help <args>
 autocmd FileType help wincmd L
 
@@ -95,6 +95,10 @@ if !v:shell_error && s:uname == "Linux" && !has('nvim')
     set ttymouse=xterm
 endif
 
+" Remove highlighting with Ctrl+L
+" This should also reload the buffer
+nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
+
 " Do not show stupid q: window
 map q: :q
 
@@ -104,16 +108,16 @@ cmap w!! w !sudo tee > /dev/null %
 " List chars with unicode
 exec "set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
 
-" visual indication for long lines
+" Visual indication for long lines
 "set colorcolumn=91
-" but only show it when the line is actually long.
+" But only show it when the line is actually long.
 highlight ColorColumn ctermbg=red
 call matchadd('ColorColumn', '\%91v', 100)
 
-" when typing jj in insert mode, go back to normal mode
+" When typing jj in insert mode, go back to normal mode
 inoremap jj <ESC>
 
-" use :w!! to write to a file using sudo if you forgot to 'sudo vim file'
+" Use :w!! to write to a file using sudo if you forgot to 'sudo vim file'
 " (it will prompt for sudo password when writing)
 cmap w!! %!sudo tee > /dev/null %
 
@@ -188,9 +192,8 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 
 " ==================== vim-airline ====================
 let g:airline_theme='dracula'
-let g:colorizer_auto_color=1
 let g:airline_powerline_fonts=1
-
+"
 " Tabbar customization
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
