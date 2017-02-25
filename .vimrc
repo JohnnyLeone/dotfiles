@@ -23,6 +23,7 @@ Plug 'fatih/vim-go'
 Plug 'vim-ruby/vim-ruby'
 Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 
 call plug#end()                 " required
 
@@ -152,7 +153,6 @@ let g:go_highlight_extra_types = 0
 let g:go_highlight_operators = 0
 let g:go_highlight_build_constraints = 1
 
-
 au FileType go nmap <Leader>s <Plug>(go-def-split)
 au FileType go nmap <Leader>v <Plug>(go-def-vertical)
 au FileType go nmap <Leader>i <Plug>(go-info)
@@ -186,10 +186,12 @@ let NERDTreeIgnore=['\.vim$', '\~$', '\.git$', '.DS_Store']
 " Close nerdtree and vim on close file
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-
-" ==================== Theme ====================
-syntax on
+" ==================== vim-airline ====================
 let g:airline_theme='dracula'
-let g:airline_powerline_fonts=1
-let g:airline#extensions#tabline#enabled = 1
 let g:colorizer_auto_color=1
+let g:airline_powerline_fonts=1
+
+" Tabbar customization
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
