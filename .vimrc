@@ -95,15 +95,18 @@ if !v:shell_error && s:uname == "Linux" && !has('nvim')
     set ttymouse=xterm
 endif
 
-" Remove highlighting with Ctrl+L
-" This should also reload the buffer
-nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
-
 " Do not show stupid q: window
 map q: :q
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
+
+
+" This comes first, because we have mappings that depend on leader
+" With a map leader it's possible to do extra key combinations
+" i.e: <leader>w saves the current file
+let mapleader = ","
+let g:mapleader = ","
 
 " List chars with unicode
 exec "set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
@@ -121,8 +124,8 @@ inoremap jj <ESC>
 " (it will prompt for sudo password when writing)
 cmap w!! %!sudo tee > /dev/null %
 
-" Toggle hlsearch with <leader>hs
-nmap <leader>hs :set hlsearch! hlsearch?<CR>
+" Toggle hlsearch with <leader>hl
+nmap <leader>hl :set hlsearch! hlsearch?<CR>
 
 " Open any file with pre-existing swapfile in readonly mode
 augroup NoSimultaneousEdits

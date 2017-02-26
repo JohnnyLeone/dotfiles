@@ -170,6 +170,7 @@ chrome(){
 		--device /dev/snd \
 		--device /dev/dri \
 		--device /dev/video0 \
+		--device /dev/usb \
 		--device /dev/bus/usb \
 		--group-add audio \
 		--group-add video \
@@ -238,6 +239,9 @@ firefox(){
 		--device /dev/dri \
 		--name firefox \
 		${DOCKER_REPO_PREFIX}/firefox "$@"
+
+	# exit current shell
+	exit 0
 }
 gcalcli(){
 	docker run --rm -it \
@@ -333,6 +337,18 @@ kernel_builder(){
 		--cpu-shares=512 \
 		--name kernel-builder \
 		${DOCKER_REPO_PREFIX}/kernel-builder
+}
+keypassxc(){
+	del_stopped keypassxc
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-v /usr/share/X11/xkb:/usr/share/X11/xkb:ro \
+		-e "DISPLAY=unix${DISPLAY}" \
+		-v /etc/machine-id:/etc/machine-id:ro \
+		--name keypassxc \
+		${DOCKER_REPO_PREFIX}/keepassxc
 }
 kvm(){
 	del_stopped kvm
@@ -870,8 +886,8 @@ transmission(){
 travis(){
 	docker run -it --rm \
 		-v "${HOME}/.travis:/root/.travis" \
-		-v $(pwd):/repo \
-		--workdir /repo \
+		-v "$(pwd):/usr/src/repo:ro" \
+		--workdir /usr/src/repo \
 		--log-driver none \
 		${DOCKER_REPO_PREFIX}/travis "$@"
 }
@@ -938,6 +954,15 @@ watchman(){
 		-v "${HOME}/Downloads:/root/Downloads" \
 		--name watchman \
 		${DOCKER_REPO_PREFIX}/watchman --foreground
+}
+weeslack(){
+	del_stopped weeslack
+
+	docker run --rm -it \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v "${HOME}/.weechat:/home/user/.weechat" \
+		--name weeslack \
+		${DOCKER_REPO_PREFIX}/wee-slack
 }
 wireshark(){
 	del_stopped wireshark
