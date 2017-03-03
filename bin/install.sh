@@ -82,19 +82,19 @@ setup_sudo() {
 }
 
 install_shell() {
-    git clone git://github.com/robbyrussell/oh-my-zsh.git /home/${USERNAME}/.oh-my-zsh
-    cp /home/${USERNAME}/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+    git clone git://github.com/robbyrussell/oh-my-zsh.git "/home/${USERNAME}/.oh-my-zsh"
+    cp "/home/${USERNAME}/.oh-my-zsh/templates/zshrc.zsh-template" ~/.zshrc
 
     # zsh plugins
-    git clone https://github.com/zsh-users/zsh-completions /home/${USERNAME}/.oh-my-zsh/custom/plugins/zsh-completions
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/${USERNAME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+    git clone https://github.com/zsh-users/zsh-completions "/home/${USERNAME}/.oh-my-zsh/custom/plugins/zsh-completions"
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "/home/${USERNAME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
 
     # set zsh as default shell
-    sudo chsh -s /bin/zsh ${USERNAME}
+    sudo chsh -s /bin/zsh "${USERNAME}"
 
     # install gdb-peda
-    git clone https://github.com/longld/peda.git /home/${USERNAME}/peda
-    echo "source /home/${USERNAME}/peda/peda.py" >> /home/${USERNAME}/.gdbinit
+    git clone https://github.com/longld/peda.git "/home/${USERNAME}/peda"
+    echo "source /home/${USERNAME}/peda/peda.py" >> "/home/${USERNAME}/.gdbinit"
 }
 
 get_dotfiles() {
@@ -123,20 +123,20 @@ install_vim() {
     sudo pacman -S --needed --noconfirm vim neovim python-neovim python2-neovim 
 
     # install my favorite plugin manager for neovim
-    curl -fLo /home/${USERNAME}/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    curl -fLo "/home/${USERNAME}/.local/share/nvim/site/autoload/plug.vim" --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     # install vim-plug also for vim
-    curl -fLo /home/${USERNAME}/.local/share/nvim/autoload/plug.vim --create-dirs \
+    curl -fLo "/home/${USERNAME}/.local/share/nvim/autoload/plug.vim" --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     # alias neovim dotfiles to vim
-    ln -sfn /home/${USERNAME}/.local/share/nvim /home/${USERNAME}/.vim
+    ln -sfn "/home/${USERNAME}/.local/share/nvim" "/home/${USERNAME}/.vim"
 
     # alias neovim dotfiles for root
     sudo mkdir -p /root/.config/nvim
-    sudo ln -sfn /home/${USERNAME}/.vimrc /root/.config/nvim/init.vim
-    sudo ln -sfn /home/${USERNAME}/.local/share/nvim /root/.local/share/nvim
+    sudo ln -sfn "/home/${USERNAME}/.vimrc" "/root/.config/nvim/init.vim"
+    sudo ln -sfn "/home/${USERNAME}/.local/share/nvim" "/root/.local/share/nvim"
 }
 
 # installs docker
