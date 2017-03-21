@@ -2,7 +2,7 @@
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don’t want to commit.
 for file in ~/.{bash_prompt,aliases,functions,path,dockerfunc,extra,exports}; do
-	[[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
+    [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
 done
 unset file
 
@@ -90,14 +90,14 @@ GPG_TTY=$(tty)
 
 # Start the gpg-agent if not already running
 if ! pgrep -x -u "${USER}" gpg-agent >/dev/null 2>&1; then
-	gpg-connect-agent /bye >/dev/null 2>&1
-	gpg-connect-agent updatestartuptty /bye >/dev/null
+    gpg-connect-agent /bye >/dev/null 2>&1
+    gpg-connect-agent updatestartuptty /bye >/dev/null
 fi
 
 # Set SSH to use gpg-agent
 unset SSH_AGENT_PID
 if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
-	export SSH_AUTH_SOCK="/run/user/$UID/gnupg/S.gpg-agent.ssh"
+    export SSH_AUTH_SOCK="/run/user/$UID/gnupg/S.gpg-agent.ssh"
 fi
 
 # nvm
