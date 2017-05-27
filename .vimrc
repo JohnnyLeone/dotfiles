@@ -24,6 +24,7 @@ Plug 'vim-ruby/vim-ruby'
 Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
+Plug 'jamessan/vim-gnupg'
 
 call plug#end()                 " required
 
