@@ -152,11 +152,11 @@ bindsym XF86MonBrightnessDown exec xbacklight -dec 10 # decrease screen brightne
 
 # Screenshots
 # Screenshot fullscreen
-bindsym Print exec "scrot -q 100 ${HOME}'/Pictures/Screenshots/%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'gsutil cp -a public-read $f gs://misc.j3ss.co/screenshots/ && echo https://misc.j3ss.co/screenshots/$n | xclip -i -selection clipboard'"
+bindsym Print exec "scrot -q 100 ${HOME}'/Pictures/Screenshots/%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'xclip -selection clipboard -t image/png $f'"
 # Screenshot with selection
-bindsym $mod+Print exec "sleep 0.2; scrot -q 100 -s ${HOME}'/Pictures/Screenshots/%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'gsutil cp -a public-read $f gs://misc.j3ss.co/screenshots/ && echo https://misc.j3ss.co/screenshots/$n | xclip -i -selection clipboard'"
+bindsym $mod+Print exec "sleep 0.2; scrot -q 100 -s ${HOME}'/Pictures/Screenshots/%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'xclip -selection clipboard -t image/png $f'"
 # Screenshot current focused window
-bindsym Shift+Print exec "scrot -q 100 -u ${HOME}'/Pictures/Screenshots/%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'gsutil cp -a public-read $f gs://misc.j3ss.co/screenshots/ && echo https://misc.j3ss.co/screenshots/$n | xclip -i -selection clipboard'"
+bindsym Shift+Print exec "scrot -q 100 -u ${HOME}'/Pictures/Screenshots/%Y-%m-%d-%H-%M-%S_$wx$h.png' -e 'xclip -selection clipboard -t image/png $f'"
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
