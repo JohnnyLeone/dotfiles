@@ -25,6 +25,7 @@ Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'jamessan/vim-gnupg'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 call plug#end()                 " required
 
