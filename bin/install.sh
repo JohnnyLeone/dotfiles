@@ -93,8 +93,8 @@ install_shell() {
     sudo chsh -s /bin/zsh "${USERNAME}"
 
     # install gdb-peda
-    git clone https://github.com/longld/peda.git "/home/${USERNAME}/peda"
-    echo "source /home/${USERNAME}/peda/peda.py" >> "/home/${USERNAME}/.gdbinit"
+    wget -O /home/${USERNAME}/.gdbinit-gef.py -q https://github.com/hugsy/gef/raw/master/gef.py
+    echo "source /home/${USERNAME}/.gdbinit-gef.py" >> "/home/${USERNAME}/.gdbinit"
 }
 
 get_dotfiles() {
