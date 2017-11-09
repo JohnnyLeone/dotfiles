@@ -92,8 +92,8 @@ install_shell() {
     # set zsh as default shell
     sudo chsh -s /bin/zsh "${USERNAME}"
 
-    # install gdb-peda
-    wget -O /home/${USERNAME}/.gdbinit-gef.py -q https://github.com/hugsy/gef/raw/master/gef.py
+    # install GEF
+    wget -O "/home/${USERNAME}/.gdbinit-gef.py" -q https://github.com/hugsy/gef/raw/master/gef.py
     echo "source /home/${USERNAME}/.gdbinit-gef.py" >> "/home/${USERNAME}/.gdbinit"
 }
 
