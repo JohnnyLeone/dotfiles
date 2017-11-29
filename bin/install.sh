@@ -137,6 +137,8 @@ install_vim() {
     sudo mkdir -p /root/.config/nvim
     sudo ln -sfn "/home/${USERNAME}/.vimrc" "/root/.config/nvim/init.vim"
     sudo ln -sfn "/home/${USERNAME}/.local/share/nvim" "/root/.local/share/nvim"
+    sudo curl -fLo /root/.config/nvim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
 # installs docker
