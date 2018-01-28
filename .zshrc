@@ -57,7 +57,7 @@ ZSH_THEME="steeef"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(… zsh-completions zsh-syntax-highlighting git go ruby)
+plugins=(… zsh-completions zsh-syntax-highlighting git go ruby vi-mode)
 autoload -U compinit && compinit
 
 source $ZSH/oh-my-zsh.sh
@@ -111,3 +111,4 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
