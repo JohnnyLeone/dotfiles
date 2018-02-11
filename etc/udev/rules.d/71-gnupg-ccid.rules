@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="20a0", ENV{ID_MODEL_ID}=="4108", MODE="660", GROUP="scard"

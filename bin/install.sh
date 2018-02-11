@@ -20,7 +20,8 @@ setup_sources() {
 
 # install stuff for i3 window manager
 install_wmapps() {
-    local pkgs=( feh i3 i3lock i3status scrot neovim )
+    local pkgs=( feh gnome-themes-standard i3 i3lock i3status scrot 
+neovim xorg-xinit xorg-server xf86-video-intel )
 
     pacman -S --needed --noconfirm "${pkgs[@]}"
 }
@@ -44,7 +45,6 @@ base() {
         ranger \
         smartmontools \
         syncthing \
-        syncthing-inotify \
         powertop \
         x86_energy_perf_policy \
         xorg-xbacklight \
@@ -155,7 +155,6 @@ install_docker() {
 install_syncthing() {
     systemctl daemon-reload
     systemctl enable "syncthing@${USERNAME}"
-    systemctl enable "syncthing-inotify@${USERNAME}.service"
 }
 
 # install/update golang from source
