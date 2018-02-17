@@ -20,8 +20,7 @@ setup_sources() {
 
 # install stuff for i3 window manager
 install_wmapps() {
-    local pkgs=( feh gnome-themes-standard i3 i3lock i3status scrot 
-neovim xorg-xinit xorg-server xf86-video-intel )
+    local pkgs=( feh gnome-themes-standard i3 i3lock i3status xcompmgr scrot neovim xorg-xinit xorg-server xf86-video-intel )
 
     pacman -S --needed --noconfirm "${pkgs[@]}"
 }
