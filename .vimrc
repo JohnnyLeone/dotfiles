@@ -27,6 +27,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'jamessan/vim-gnupg'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'reedes/vim-pencil'
+Plug 'dpelle/vim-LanguageTool'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
