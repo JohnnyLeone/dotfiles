@@ -7,7 +7,7 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'dracula/vim'
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'chrisbra/Colorizer'
 Plug 'scrooloose/nerdtree'
 Plug 'majutsushi/tagbar'
@@ -302,6 +302,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsEditSplit="vertical"
 
 " ==================== vim-airline ====================
+let g:dracula_colorterm = 0
 color dracula
 let g:airline_powerline_fonts=1
 "
