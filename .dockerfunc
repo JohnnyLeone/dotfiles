@@ -8,13 +8,13 @@ export DOCKER_REPO_PREFIX=jess
 #
 dcleanup(){
 	local containers
-	containers=( $(docker ps -aq 2>/dev/null) )
+	mapfile -t containers < <(docker ps -aq 2>/dev/null)
 	docker rm "${containers[@]}" 2>/dev/null
 	local volumes
-	volumes=( $(docker ps --filter status=exited -q 2>/dev/null) )
+	mapfile -t volumes < <(docker ps --filter status=exited -q 2>/dev/null)
 	docker rm -v "${volumes[@]}" 2>/dev/null
 	local images
-	images=( $(docker images --filter dangling=true -q 2>/dev/null) )
+	mapfile -t images < <(docker images --filter dangling=true -q 2>/dev/null)
 	docker rmi "${images[@]}" 2>/dev/null
 }
 del_stopped(){
@@ -99,6 +99,12 @@ aws(){
 		--log-driver none \
 		--name aws \
 		${DOCKER_REPO_PREFIX}/awscli "$@"
+}
+az(){
+	docker run -it --rm \
+		-v "${HOME}/.azure:/root/.azure" \
+		--log-driver none \
+		${DOCKER_REPO_PREFIX}/azure-cli "$@"
 }
 bees(){
 	docker run -it --rm \
@@ -243,6 +249,12 @@ firefox(){
 	# exit current shell
 	exit 0
 }
+fleetctl(){
+	docker run --rm -it \
+		--entrypoint fleetctl \
+		-v "${HOME}/.fleet://.fleet" \
+		r.j3ss.co/fleet "$@"
+}
 gcalcli(){
 	docker run --rm -it \
 		-v /etc/localtime:/etc/localtime:ro \
@@ -296,6 +308,13 @@ htop(){
 		--name htop \
 		${DOCKER_REPO_PREFIX}/htop
 }
+htpasswd(){
+	docker run --rm -it \
+		--net none \
+		--name htpasswd \
+		--log-driver none \
+		${DOCKER_REPO_PREFIX}/htpasswd "$@"
+}
 http(){
 	docker run -t --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
@@ -340,7 +359,8 @@ john(){
 kernel_builder(){
 	docker run --rm -it \
 		-v /usr/src:/usr/src \
-		--cpu-shares=512 \
+		-v /lib/modules:/lib/modules \
+		-v /boot:/boot \
 		--name kernel-builder \
 		${DOCKER_REPO_PREFIX}/kernel-builder
 }
@@ -406,6 +426,16 @@ masscan(){
 		--cap-add NET_ADMIN \
 		--name masscan \
 		${DOCKER_REPO_PREFIX}/masscan "$@"
+}
+mc(){
+	cwd="$(pwd)"
+	name="$(basename "$cwd")"
+
+	docker run --rm -it \
+		--log-driver none \
+		-v "${cwd}:/home/mc/${name}" \
+		--workdir "/home/mc/${name}" \
+		${DOCKER_REPO_PREFIX}/mc "$@"
 }
 mpd(){
 	del_stopped mpd
@@ -528,6 +558,48 @@ notify_send(){
 	relies_on notify_osd
 	local args=${*:2}
 	docker exec -i notify_osd notify-send "$1" "${args}"
+}
+opensnitch(){
+	del_stopped opensnitchd
+	del_stopped opensnitch
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		--net host \
+		--cap-add NET_ADMIN \
+		-v /etc/machine-id:/etc/machine-id:ro \
+		-v /var/run/dbus:/var/run/dbus \
+		-v /usr/share/dbus-1:/usr/share/dbus-1 \
+		-v "/var/run/user/$(id -u):/var/run/user/$(id -u)" \
+		-e DBUS_SESSION_BUS_ADDRESS \
+		-e XAUTHORITY \
+		-v "${HOME}/.Xauthority:$HOME/.Xauthority" \
+		-v /tmp:/tmp \
+		--name opensnitchd \
+		${DOCKER_REPO_PREFIX}/opensnitchd
+
+	docker run -d \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e "DISPLAY=unix${DISPLAY}" \
+		-v /usr/share/X11:/usr/share/X11:ro \
+		-v /usr/share/dbus-1:/usr/share/dbus-1 \
+		-v /etc/machine-id:/etc/machine-id:ro \
+		-v /var/run/dbus:/var/run/dbus \
+		-v "/var/run/user/$(id -u):/var/run/user/$(id -u)" \
+		-e DBUS_SESSION_BUS_ADDRESS \
+		-e XAUTHORITY \
+		-v "${HOME}/.Xauthority:$HOME/.Xauthority" \
+		-e HOME \
+		-e QT_DEVICE_PIXEL_RATIO \
+		-e XDG_RUNTIME_DIR \
+		-v /etc/passwd:/etc/passwd:ro \
+		-v /etc/group:/etc/group:ro \
+		-v /tmp:/tmp \
+		-u "$(id -u)" -w "$HOME" \
+		--net host \
+		--name opensnitch \
+		${DOCKER_REPO_PREFIX}/opensnitch
 }
 pandoc(){
 	local file=${*: -1}
@@ -687,7 +759,6 @@ scudcloud(){
 		-v /etc/group:/etc/group:ro \
 		-u "$(whoami)" -w "$HOME" \
 		-v "${HOME}/.Xauthority:$HOME/.Xauthority" \
-		-v /etc/machine-id:/etc/machine-id:ro \
 		-v "${HOME}/.scudcloud:/home/jessie/.config/scudcloud" \
 		--device /dev/snd \
 		--name scudcloud \
@@ -765,6 +836,25 @@ ssh2john(){
 		--entrypoint ssh2john \
 		${DOCKER_REPO_PREFIX}/john "$@"
 }
+sshb0t(){
+	del_stopped sshb0t
+
+	if [[ ! -d "${HOME}/.ssh" ]]; then
+		mkdir -p "${HOME}/.ssh"
+	fi
+
+	if [[ ! -f "${HOME}/.ssh/authorized_keys" ]]; then
+		touch "${HOME}/.ssh/authorized_keys"
+	fi
+
+	GITHUB_USER=${GITHUB_USER:=jessfraz}
+
+	docker run --rm -it \
+		--name sshb0t \
+		-v "${HOME}/.ssh/authorized_keys:/root/.ssh/authorized_keys" \
+		r.j3ss.co/sshb0t \
+		--user "${GITHUB_USER}" --keyfile /root/.ssh/authorized_keys --once
+}
 steam(){
 	del_stopped steam
 	relies_on pulseaudio
@@ -808,6 +898,17 @@ termboy(){
 		--device /dev/snd \
 		--name termboy \
 		${DOCKER_REPO_PREFIX}/nes "/games/${game}.rom"
+}
+terraform(){
+	docker run -it --rm \
+		-v "${HOME}:${HOME}:ro" \
+		-v "$(pwd):/usr/src/repo" \
+		-v /tmp:/tmp \
+		--workdir /usr/src/repo \
+		--log-driver none \
+		-e GOOGLE_APPLICATION_CREDENTIALS \
+		-e SSH_AUTH_SOCK \
+		${DOCKER_REPO_PREFIX}/terraform "$@"
 }
 tor(){
 	del_stopped tor
@@ -972,6 +1073,15 @@ weeslack(){
 		--name weeslack \
 		${DOCKER_REPO_PREFIX}/wee-slack
 }
+wg(){
+	docker run -i --rm \
+		--log-driver none \
+		-v /tmp:/tmp \
+		--cap-add NET_ADMIN \
+		--net host \
+		--name wg \
+		${DOCKER_REPO_PREFIX}/wg "$@"
+}
 wireshark(){
 	del_stopped wireshark
 
@@ -990,6 +1100,16 @@ wrk(){
 		--log-driver none \
 		--name wrk \
 		${DOCKER_REPO_PREFIX}/wrk "$@"
+}
+ykman(){
+	del_stopped ykpersonalize
+
+	docker run --rm -it \
+		-v /etc/localtime:/etc/localtime:ro \
+		--device /dev/usb \
+		--device /dev/bus/usb \
+		--name ykman \
+		${DOCKER_REPO_PREFIX}/ykman bash
 }
 ykpersonalize(){
 	del_stopped ykpersonalize
@@ -1012,33 +1132,3 @@ yubico_piv_tool(){
 		${DOCKER_REPO_PREFIX}/yubico-piv-tool bash
 }
 alias yubico-piv-tool="yubico_piv_tool"
-
-
-###
-### Awesome sauce by @jpetazzo
-###
-if command -v "docker" &>/dev/null; then
-	command_not_found_handle () {
-		# Check if there is a container image with that name
-		if ! docker inspect --format '{{ .Author }}' "$1" >&/dev/null ; then
-			echo "$0: $1: command not found"
-			return
-		fi
-
-		# Check that it's really the name of the image, not a prefix
-		if docker inspect --format '{{ .Id }}' "$1" | grep -q "^$1" ; then
-			echo "$0: $1: command not found"
-			return
-		fi
-
-		docker run -ti -u "$(whoami)" -w "$HOME" \
-			"$(env | cut -d= -f1 | awk '{print "-e", $1}')" \
-			--device /dev/snd \
-			-v /etc/passwd:/etc/passwd:ro \
-			-v /etc/group:/etc/group:ro \
-			-v /etc/localtime:/etc/localtime:ro \
-			-v /home:/home \
-			-v /tmp/.X11-unix:/tmp/.X11-unix \
-			"${DOCKER_REPO_PREFIX}/${1}" "$@"
-	}
-fi

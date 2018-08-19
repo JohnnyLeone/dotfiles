@@ -77,7 +77,7 @@ setup_sudo() {
     # that way things are removed on reboot
     # i like things clean but you may not want this
     mkdir -p "/home/$USERNAME/Downloads"
-    echo -e "\n# tmpfs for downloads\ntmpfs\t/home/${USERNAME}/Downloads\ttmpfs\tnodev,nosuid,size=5G\t0\t0" >> /etc/fstab
+    echo -e "\\n# tmpfs for downloads\\ntmpfs\\t/home/${USERNAME}/Downloads\\ttmpfs\\tnodev,nosuid,size=5G\\t0\\t0" >> /etc/fstab
 }
 
 install_shell() {
@@ -217,7 +217,7 @@ install_kvm() {
 }
 
 usage() {
-    echo -e "install.sh\n\tThis script installs my basic setup for a debian laptop\n"
+    echo -e "install.sh\\n\\tThis script installs my basic setup for a debian laptop\\n"
     echo "Usage:"
     echo "  sources                     - setup sources & install base pkgs"
     echo "  wm                          - install window manager/desktop pkgs"
