@@ -7,3 +7,4 @@ export PATH=$HOME/bin:/usr/local/bin:$GOPATH/bin:/sbin:$PATH
 
 # update cdpath
 export CDPATH=${CDPATH}:$GOPATH/src/github.com:$GOPATH/src/golang.org:$GOPATH/src
+

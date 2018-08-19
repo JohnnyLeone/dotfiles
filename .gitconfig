@@ -1,4 +1,5 @@
 [alias]
+
 	# View abbreviated SHA, description, and history graph of the latest 20 commits
 	l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
@@ -57,7 +58,7 @@
 
 	# Remove branches that have already been merged with master
 	# a.k.a. ‘delete merged’
-	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d; git remote -v update -p"
 
 	# List contributors with number of commits
 	contributors = shortlog --summary --numbered
@@ -146,14 +147,6 @@
 	# change to maching for machines with older versions of git 1.x.x
 	default = simple
 
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
-
 [url "git@github.com:"]
 	pushInsteadOf = https://github.com/
 	pushInsteadOf = "github:"
@@ -179,6 +172,7 @@
 	user = johnnyleone
 
 [commit]
-	gpgsign = true
+    gpgsign = true
+
 [gpg]
 	program = gpg2

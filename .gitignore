@@ -13,6 +13,8 @@ Session.vim
 .netrwhist
 *~
 
+.uuid
+
 .extra
 .gnupg
 !.gnupg/gpg*.conf
@@ -26,3 +28,4 @@ Session.vim
 .irssi/startup
 .rainbow_oauth
 .nginx/conf.d/*
+
