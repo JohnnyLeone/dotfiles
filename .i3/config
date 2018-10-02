@@ -57,7 +57,7 @@ for_window [class="Wireshark"] floating enable
 for_window [class="Godot"] floating enable
 
 # lock screen
-bindsym $mod+l exec i3lock -c 111111
+bindsym $mod+l exec i3lock -c 111111 && sleep 1 && systemctl suspend
 
 # change focus
 bindsym $mod+j focus left
@@ -144,8 +144,8 @@ bindsym $mod+u exec setxkbmap us
 bindsym $mod+i exec setxkbmap de
 
 # audio controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +6% #increase sound volume
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -6% #decrease sound volume
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +6% #increase sound volume
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -6% #decrease sound volume
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
 bindsym XF86AudioMicMute exec pactl set-source-mute 1 toggle # mute mic
 
