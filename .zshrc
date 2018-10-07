@@ -102,7 +102,7 @@ fi
 alias ssh="gpg-connect-agent updatestartuptty /bye >/dev/null; ssh"
 
 # nvm
-export NVM_DIR="/home/ahirschauer/.nvm"
+export NVM_DIR="/home/ahs/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # rvm
@@ -113,3 +113,4 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+source /usr/share/nvm/init-nvm.sh
