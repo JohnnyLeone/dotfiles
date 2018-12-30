@@ -44,6 +44,8 @@ base() {
         ranger \
         smartmontools \
         syncthing \
+        udisks2 \
+        udiskie \
         powertop \
         x86_energy_perf_policy \
         xorg-xbacklight \
