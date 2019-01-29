@@ -32,6 +32,7 @@ base() {
     # extra needed packages
     pacman -S --needed --noconfirm \
         acpi_call \
+        alacritty \
         arc-gtk-theme \
         arc-icon-theme \
         asciinema \
@@ -40,6 +41,9 @@ base() {
         ethtool \
         jq \
         lolcat \
+        libu2f-host \
+        lightdm \
+        lightdm-gtk-greeter\
         rxvt-unicode \
         ranger \
         smartmontools \
