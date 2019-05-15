@@ -42,6 +42,7 @@ base() {
         jq \
         lolcat \
         libu2f-host \
+        light \
         lightdm \
         lightdm-gtk-greeter\
         rxvt-unicode \
@@ -125,7 +126,7 @@ get_dotfiles() {
 
 install_vim() {
     # install necessary packages
-    sudo pacman -S --needed --noconfirm vim neovim python-neovim python2-neovim 
+    sudo pacman -S --needed --noconfirm vim neovim python-neovim
 
     # install my favorite plugin manager for neovim
     curl -fLo "/home/${USERNAME}/.local/share/nvim/site/autoload/plug.vim" --create-dirs \

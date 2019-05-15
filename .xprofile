@@ -9,4 +9,4 @@ udiskie --no-file-manager --smart-tray --use-udisks2 &
 # run local xhost
 xhost local:root
 
-xcompmgr -c &
+compton -c -b
