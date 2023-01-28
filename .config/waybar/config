@@ -1,0 +1,110 @@
+{
+    // "layer": "top", // Waybar at top layer
+    "position": "bottom", // Waybar position (top|bottom|left|right)
+    "height": 20, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 4, // Gaps between modules (4px)
+    // Choose the order of the modules
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": [],
+    "modules-right": ["custom/grimshot", "disk", "pulseaudio", "network", "cpu", "custom/gpu-usage", "memory", "temperature", "keyboard-state", "sway/language", "clock", "tray"],
+    // Modules configuration
+    "sway/workspaces": {
+        "disable-scroll-wraparound": true,
+        "enable-bar-scroll": true,
+        "format": "{name}: {icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
+    },
+    "keyboard-state": {
+        "numlock": true,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "",
+            "unlocked": ""
+        }
+    },
+    "sway/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 5
+    },
+    "clock": {
+        "interval": 2,
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format": "{:%a %d.%m.%Y %H:%M:%S}",
+    },
+    "cpu": {
+        "format": "CPU {usage}% ",
+        "tooltip": false,
+        "interval": 1
+    },
+    "memory": {
+        "format": "{}% "
+    },
+    "disk": {
+        "interval": 30,
+        "format": "{free}",
+        "path": "/",
+        "interval": 1
+    },
+    "temperature": {
+        "thermal-zone": 2,
+        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        "format-critical": "CPU: {temperatureC}°C {icon}",
+        "format": "CPU: {temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "network": {
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+        "tooltip-format-ethernet": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "pulseaudio": {
+        "scroll-step": 5, // %, can be a float
+        "format": "{volume}% {icon} {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "custom/gpu-usage": {
+        "exec": "cat /sys/class/hwmon/hwmon3/device/gpu_busy_percent",
+        "format": "GPU {}% ",
+        "return-type": "",
+        "interval": 1
+    },
+    "custom/grimshot": { 
+        "format": "📷", 
+        "tooltip": false, 
+        "on-click": "grimshot --notify save output - | swappy -f -", 
+        "on-click-middle": "grimshot --notify save window - | swappy -f -", 
+        "on-click-right": "grimshot --notify save area - | swappy -f -" 
+    }
+}
+
