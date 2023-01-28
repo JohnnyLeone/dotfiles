@@ -22,13 +22,16 @@ urxvt*depth: 32
 urxvt*background: rgba:0000/0000/0200/c800
 
 !-- Xft settings -- !
-Xft.dpi:        96
+Xft.dpi:        112
 Xft.rgba:       rgb
 Xft.autohint:   0
 Xft.lcdfilter:  lcddefault
 Xft.hintstyle:  hintfull
 Xft.hinting:    1
 Xft.antialias:  1
+
+!-- Xcursor -- !
+Xcursor.size: 16
 
 ! -- Fonts -- !
 URxvt.font: xft:Roboto Mono for Powerline:size=10,style=Regular
