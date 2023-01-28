@@ -20,7 +20,7 @@ setup_sources() {
 
 # install stuff for i3 window manager
 install_wmapps() {
-    local pkgs=( feh gnome-themes-standard i3 i3lock i3status xcompmgr scrot neovim xorg-xinit xorg-server xf86-video-intel )
+    local pkgs=( feh gnome-themes-standard i3 i3lock i3status xcompmgr picom xorg-xhost flameshot neovim xorg-xinit xorg-server xf86-video-intel )
 
     pacman -S --needed --noconfirm "${pkgs[@]}"
 }
@@ -38,6 +38,7 @@ base() {
         asciinema \
         dhclient \
         dmenu \
+        dunst \
         ethtool \
         jq \
         lolcat \
@@ -45,6 +46,9 @@ base() {
         light \
         lightdm \
         lightdm-gtk-greeter\
+        nnn \
+	pulseaudio-rtp \
+	pulseaudio-zeroconf \
         rxvt-unicode \
         ranger \
         smartmontools \
@@ -126,7 +130,7 @@ get_dotfiles() {
 
 install_vim() {
     # install necessary packages
-    sudo pacman -S --needed --noconfirm vim neovim python-neovim
+    sudo pacman -S --needed --noconfirm vim neovim python-pynvim
 
     # install my favorite plugin manager for neovim
     curl -fLo "/home/${USERNAME}/.local/share/nvim/site/autoload/plug.vim" --create-dirs \
@@ -141,6 +145,7 @@ install_vim() {
 
     # alias neovim dotfiles for root
     sudo mkdir -p /root/.config/nvim
+    sudo mkdir -p /root/.local/share
     sudo ln -sfn "/home/${USERNAME}/.vimrc" "/root/.config/nvim/init.vim"
     sudo ln -sfn "/home/${USERNAME}/.local/share/nvim" "/root/.local/share/nvim"
     sudo curl -fLo /root/.config/nvim/autoload/plug.vim --create-dirs \
