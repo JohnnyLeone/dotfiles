@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # start udiskie auto disk mounting
-udiskie --no-file-manager --smart-tray --use-udisks2 &
+udiskie --no-file-manager --smart-tray &
 
 # run Xmodmap
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
@@ -9,4 +9,6 @@ udiskie --no-file-manager --smart-tray --use-udisks2 &
 # run local xhost
 xhost local:root
 
-compton -c -b
+picom -c -b
+
+setxkbmap -layout us,de -option grp:alt_shift_toggle
