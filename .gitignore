@@ -1,24 +1,30 @@
+# Editor and generated files
 *~
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
 [._]*.s[a-w][a-z]
 [._]s[a-w][a-z]
 *.un~
 Session.vim
 .netrwhist
-*~
+__pycache__/
+*.pyc
+.DS_Store
+.directory
+.Trash-*
 
-.uuid
-
+# Private and per-machine settings
 .extra
-.gnupg
-!.gnupg/gpg*.conf
-.i3/logfile
+.gitconfig.local
+.tmux.conf.local
+.config/kitty/local.conf
+.uuid
+.rainbow_oauth
+
+# Keep GnuPG preferences, never keyrings or key material
+.gnupg/*
+!.gnupg/gpg.conf
+!.gnupg/gpg-agent.conf
+
+# Keep reusable IRC themes/plugins, not identities, servers, or runtime state
 .irssi/away.log
 .irssi/config*
 .irssi/nicknames_whitelist
@@ -26,6 +32,3 @@ Session.vim
 .irssi/saved_colors
 .irssi/scripts/autorun/blocker.pl
 .irssi/startup
-.rainbow_oauth
-.nginx/conf.d/*
-

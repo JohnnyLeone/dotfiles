@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+    printf '%s\n' "$*" >&2
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send 'Dotfiles' "$*" || true
+    fi
+    exit 1
+}
+need() { command -v "$1" >/dev/null 2>&1 || fail "Missing command: $1"; }
+
+case "${1:-}" in
+    lock)
+        need hyprlock
+        playerctl --all-players pause >/dev/null 2>&1 || true
+        pgrep -x hyprlock >/dev/null || exec hyprlock
+        ;;
+    reload)
+        need Hyprland
+        config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"
+        if ! result=$(Hyprland --verify-config -c "$config" 2>&1); then
+            fail "Hyprland configuration was not reloaded: $result"
+        fi
+        exec hyprctl reload
+        ;;
+    screenshot)
+        need grim
+        need wl-copy
+        kind=${2:-area}
+        case "$kind" in
+            area)
+                need slurp
+                geometry=$(slurp) || exit 0
+                [[ -n $geometry ]] || exit 0
+                ;;
+            window)
+                need python3
+                geometry=$(hyprctl -j activewindow | python3 -c '
+import json, sys
+w = json.load(sys.stdin)
+if not w.get("address"):
+    sys.exit(1)
+print("{},{} {}x{}".format(*w["at"], *w["size"]))') || exit 0
+                ;;
+            full) ;;
+            *) fail "Unknown screenshot mode: $kind" ;;
+        esac
+        pictures=$(xdg-user-dir PICTURES 2>/dev/null) || pictures="$HOME/Pictures"
+        directory="${pictures:-$HOME/Pictures}/Screenshots"
+        mkdir -p "$directory"
+        output="$directory/$(date +%Y-%m-%d_%H-%M-%S-%N).png"
+        if [[ $kind == full ]]; then
+            grim "$output"
+        else
+            grim -g "$geometry" "$output"
+        fi
+        wl-copy --type image/png < "$output"
+        notify-send 'Screenshot saved and copied' "$output" || true
+        ;;
+    focus-mode)
+        need python3
+        exec python3 -c '
+import json, subprocess
+def query(name):
+    return json.loads(subprocess.check_output(["hyprctl", "-j", name]))
+active = query("activewindow")
+if active.get("address"):
+    candidates = [w for w in query("clients")
+                  if w.get("mapped") and not w.get("hidden")
+                  and w["workspace"]["id"] == active["workspace"]["id"]
+                  and w.get("floating") != active.get("floating")]
+    if candidates:
+        target = min(candidates, key=lambda w: w.get("focusHistoryID", 999999))
+        action = "hl.dsp.focus({window=" + json.dumps("address:" + target["address"]) + "})"
+        subprocess.run(["hyprctl", "dispatch", action], check=True)
+'
+        ;;
+    clipboard)
+        need vicinae
+        exec vicinae 'vicinae://launch/clipboard/history?toggle=true'
+        ;;
+    password)
+        # The current password manager is Bitwarden; its extension is optional.
+        if command -v bitwarden-desktop >/dev/null 2>&1; then
+            exec bitwarden-desktop
+        elif command -v bitwarden >/dev/null 2>&1; then
+            exec bitwarden
+        fi
+        exec vicinae toggle
+        ;;
+    media)
+        need mpv
+        need wl-paste
+        uri=$(wl-paste --no-newline) || exit 0
+        [[ -n $uri ]] && exec mpv -- "$uri"
+        ;;
+    exit)
+        # The first shortcut enters a confirmation submap; Enter reaches here.
+        if command -v hyprshutdown >/dev/null 2>&1; then
+            exec hyprshutdown
+        fi
+        exec hyprctl dispatch 'hl.dsp.exit()'
+        ;;
+    *) fail 'Usage: dotfiles-hypr {lock|reload|screenshot [area|window|full]|focus-mode|clipboard|password|media|exit}' ;;
+esac

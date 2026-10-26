@@ -1,19 +1,26 @@
 set nocompatible              " be iMproved, required
-filetype off                  " required
-
 filetype plugin indent on     " required
 
+if !has('nvim') && isdirectory(expand('~/.local/share/nvim/site'))
+  set runtimepath+=~/.local/share/nvim/site
+endif
+
+" Start cleanly even before optional plugins have been installed.
+if !empty(globpath(&runtimepath, 'autoload/plug.vim'))
 call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'chrisbra/Colorizer'
-Plug 'scrooloose/nerdtree'
-Plug 'majutsushi/tagbar'
+Plug 'preservim/nerdtree'
+Plug 'preservim/tagbar'
 Plug 'easymotion/vim-easymotion'
-Plug 'scrooloose/syntastic'
-Plug 'scrooloose/nerdcommenter'
+" Syntastic's old buffer hooks are incompatible with current Neovim.
+if !has('nvim')
+  Plug 'scrooloose/syntastic'
+endif
+Plug 'preservim/nerdcommenter'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-surround'
 Plug 'takac/vim-hardtime'
@@ -28,18 +35,14 @@ Plug 'jamessan/vim-gnupg'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'reedes/vim-pencil'
 Plug 'dpelle/vim-LanguageTool'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+if has('python3')
+  Plug 'SirVer/ultisnips'
+  Plug 'honza/vim-snippets'
 endif
-
 call plug#end()                 " required
+endif
 
 "
 " ===================== Settings ======================
@@ -167,7 +170,7 @@ let g:go_fmt_fail_silently = 0
 let g:go_fmt_command = "goimports"
 let g:go_autodetect_gopath = 1
 let g:go_term_enabled = 1
-let g:go_snippet_engine = "neosnippet"
+let g:go_snippet_engine = "ultisnips"
 let g:go_highlight_space_tab_error = 0
 let g:go_highlight_array_whitespace_error = 0
 let g:go_highlight_trailing_whitespace_error = 0
@@ -206,9 +209,15 @@ augroup END
 
 " ===================== NerdTree ======================
 " For toggling
-nmap <C-n> :NERDTreeToggle<CR>
-noremap <Leader>n :NERDTreeToggle<cr>
-noremap <Leader>f :NERDTreeFind<cr>
+if isdirectory(expand('~/.local/share/nvim/plugged/nerdtree'))
+  nnoremap <C-n> :NERDTreeToggle<CR>
+  nnoremap <Leader>n :NERDTreeToggle<CR>
+  nnoremap <Leader>f :NERDTreeFind<CR>
+else
+  nnoremap <C-n> :Lexplore<CR>
+  nnoremap <Leader>n :Lexplore<CR>
+  nnoremap <Leader>f :Explore<CR>
+endif
 
 let NERDTreeShowHidden=1
 
@@ -222,7 +231,7 @@ let g:vim_json_syntax_conceal = 0
 
 " ===================== Syntastic =====================
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%{exists('*SyntasticStatuslineFlag')?SyntasticStatuslineFlag():''}
 set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
@@ -230,17 +239,9 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-" ===================== deoplete ======================
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#ignore_sources = {}
-let g:deoplete#ignore_sources._ = ['buffer', 'member', 'tag', 'file', 'neosnippet']
-let g:deoplete#sources#go#sort_class = ['func', 'type', 'var', 'const']
-let g:deoplete#sources#go#align_class = 1
-
-" Use partial fuzzy matches like YouCompleteMe
-call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])
-call deoplete#custom#source('_', 'converters', ['converter_remove_paren'])
-call deoplete#custom#source('_', 'disabled_syntaxes', ['Comment', 'String'])
+" ===================== Completion ====================
+" Built-in completion works without the retired deoplete/Python host stack.
+set completeopt=menu,menuone,noselect
 
 " ==================== vim-multiple-cursors ====================
 let g:multi_cursor_use_default_mapping=0
@@ -288,8 +289,8 @@ let g:NERDTrimTrailingWhitespace = 1
 " ==================== vim-pencil =====================
 augroup pencil
   autocmd!
-  autocmd FileType markdown,mkd call pencil#init()
-  autocmd FileType text         call pencil#init()
+  autocmd FileType markdown,mkd if !empty(globpath(&runtimepath, 'autoload/pencil.vim')) | call pencil#init() | endif
+  autocmd FileType text if !empty(globpath(&runtimepath, 'autoload/pencil.vim')) | call pencil#init() | endif
 augroup END
 
 " ==================== UltiSnips ======================
@@ -304,6 +305,10 @@ let g:UltiSnipsEditSplit = "vertical"
 " ==================== vim-airline ====================
 let g:airline_theme = 'dracula'
 let g:airline_powerline_fonts = 1
+
+if !empty(globpath(&runtimepath, 'colors/dracula.vim'))
+  colorscheme dracula
+endif
 
 " Tabbar customization
 let g:airline#extensions#tabline#enabled = 1

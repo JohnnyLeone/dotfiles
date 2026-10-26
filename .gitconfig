@@ -65,7 +65,6 @@
 
     lg = log --color --decorate --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an (%G?)>%Creset' --abbrev-commit
 
-    mdiff = "!f() { git stash | head -1 | grep -q 'No local changes to save'; x=$?; git merge --no-commit $1 &>/dev/null; git add -u &>/dev/null; git diff --staged; git reset --hard &>/dev/null; test $x -ne 0 && git stash pop &>/dev/null; }; f"
 
     # Codereview aliases
     change = codereview change
@@ -96,9 +95,8 @@
     whitespace = fix
 
 [core]
-    # Use custom `.gitignore` and `.gitattributes`
+    # Use the shared ignore patterns.
     excludesfile = ~/.gitignore
-    attributesfile = ~/.gitattributes
 
     # Treat spaces before tabs and all kinds of trailing whitespace as an error
     # [default] trailing-space: looks for spaces at the end of a line
@@ -136,8 +134,8 @@
     renames = copies
 
 [help]
-    # Automatically correct and execute mistyped commands
-    autocorrect = 1
+    # Ask before correcting a mistyped command.
+    autocorrect = prompt
 
 [merge]
     # Include summaries of merged commits in newly created merge commit messages
@@ -147,32 +145,26 @@
     # change to maching for machines with older versions of git 1.x.x
     default = simple
 
-[url "git@github.com:"]
-    pushInsteadOf = https://github.com/
-    pushInsteadOf = "github:"
-    pushInsteadOf = "git://github.com/"
-
-[url "git://github.com/"]
+[url "https://github.com/"]
     insteadOf = "github:"
 
-[url "git@gist.github.com:"]
+[url "https://gist.github.com/"]
     insteadOf = "gst:"
-    pushInsteadOf = "gist:"
-    pushInsteadOf = "git://gist.github.com/"
-
-[url "git://gist.github.com/"]
     insteadOf = "gist:"
 
 [user]
     name = Andreas Hirschauer
     email = andi@linux.com
-    signingkey = 0x92766910317A1EDB
 
 [github]
     user = johnnyleone
 
 [commit]
-    gpgsign = true
+    # Enable signing in ~/.gitconfig.local after importing your signing key.
+    gpgsign = false
 
 [gpg]
-    program = gpg2
+    program = gpg
+
+[include]
+    path = ~/.gitconfig.local

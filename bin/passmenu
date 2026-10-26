@@ -1,48 +1,43 @@
 #!/usr/bin/env bash
-
-#
-# passmenu by zx2c4
-#
-# `passmenu` is a [dmenu][]-based interface to [pass][], the standard Unix
-# password manager. This design allows you to quickly copy a password to the
-# clipboard without having to open up a terminal window if you don't already have
-# one open. If `--type` is specified, the password is typed using [xdotool][]
-# instead of copied to the clipboard.
-#
-# Usage
-#
-#     passmenu [--type] [dmenu arguments...]
-#
-# [dmenu]: http://tools.suckless.org/dmenu/
-# [xdotool]: http://www.semicomplete.com/projects/xdotool/
-# [pass]: http://www.zx2c4.com/projects/password-store/
-# [passmenu]: https://git.zx2c4.com/password-store/tree/contrib/dmenu
-#
-# Changelog:
-#
-# v0.0.1: Use case-insensitive mode for dmenu
-#
-
+# Adapted from passmenu by zx2c4 for Vicinae/Wayland, retaining an X11 fallback.
+set -euo pipefail
+if [[ ${1:-} == --help || ${1:-} == -h ]]; then
+    echo 'Usage: passmenu [--type]'
+    echo 'Select a pass entry with Vicinae and copy it, or type it using wtype.'
+    exit 0
+fi
+typeit=false
+if [[ ${1:-} == --type ]]; then typeit=true; shift; fi
+[[ $# == 0 ]] || { echo 'Unexpected arguments. See passmenu --help.' >&2; exit 2; }
+command -v pass >/dev/null || { echo 'passmenu requires pass; Super+P still opens Bitwarden.' >&2; exit 127; }
 shopt -s nullglob globstar
-
-typeit=0
-if [[ $1 == "--type" ]]; then
-	typeit=1
-	shift
-fi
-
-prefix=${PASSWORD_STORE_DIR-~/.password-store}
-password_files=( "$prefix"/**/*.gpg )
-password_files=( "${password_files[@]#"$prefix"/}" )
-password_files=( "${password_files[@]%.gpg}" )
-
-password=$(printf '%s\n' "${password_files[@]}" | dmenu -i "$@")
-
-[[ -n $password ]] || exit
-
-if [[ $typeit -eq 0 ]]; then
-	pass show -c "$password" 2>/dev/null
+prefix=${PASSWORD_STORE_DIR:-$HOME/.password-store}
+files=("$prefix"/**/*.gpg)
+[[ ${#files[@]} -gt 0 ]] || { echo 'The password store is empty.' >&2; exit 1; }
+entries=("${files[@]#"$prefix"/}")
+entries=("${entries[@]%.gpg}")
+if command -v vicinae >/dev/null; then
+    selected=$(printf '%s\n' "${entries[@]}" | vicinae dmenu --placeholder 'Password') || exit 0
+elif [[ -n ${WAYLAND_DISPLAY:-} ]] && command -v bemenu >/dev/null; then
+    selected=$(printf '%s\n' "${entries[@]}" | bemenu -i -p Password) || exit 0
+elif [[ -z ${WAYLAND_DISPLAY:-} ]] && command -v dmenu >/dev/null; then
+    selected=$(printf '%s\n' "${entries[@]}" | dmenu -i -p Password) || exit 0
 else
-	pass show "$password" | { read -r pass; printf %s "$pass"; } |
-		xdotool type --clearmodifiers --file -
+    echo 'No compatible menu found (Vicinae, bemenu, or X11 dmenu).' >&2
+    exit 127
 fi
+[[ -n $selected ]] || exit 0
+found=false
+for entry in "${entries[@]}"; do [[ $entry != "$selected" ]] || found=true; done
+$found || { echo 'The selection is not a password-store entry.' >&2; exit 1; }
+if ! $typeit; then exec pass show --clip "$selected"; fi
+if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+    command -v wtype >/dev/null || { echo '--type requires wtype on Wayland.' >&2; exit 127; }
+    typer=(wtype -)
+else
+    command -v xdotool >/dev/null || { echo '--type requires xdotool on X11.' >&2; exit 127; }
+    typer=(xdotool type --clearmodifiers --file -)
+fi
+secret=$(pass show "$selected")
+printf '%s' "${secret%%$'\n'*}" | "${typer[@]}"
+unset secret

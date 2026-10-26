@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""Coordinate ashell's toggle-only IPC for manual and idle visibility changes."""
+import fcntl
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+def main(action):
+    if action not in ('toggle', 'idle-hide', 'idle-resume', 'status'):
+        raise ValueError('Usage: dotfiles-bar {toggle|idle-hide|idle-resume|status}')
+    runtime = Path(os.environ.get('XDG_RUNTIME_DIR', str(Path.home() / '.cache'))) / 'dotfiles'
+    runtime.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with (runtime / 'bar.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        processes = subprocess.run(['pgrep', '-u', str(os.getuid()), '-x', 'ashell'],
+                                   text=True, capture_output=True, check=False)
+        pids = processes.stdout.split()
+        if not pids:
+            return
+        if len(pids) != 1:
+            raise RuntimeError('Expected a single ashell process.')
+        pid = int(pids[0])
+        state_path = runtime / 'bar.json'
+        try:
+            state = json.loads(state_path.read_text())
+        except (OSError, ValueError):
+            state = {}
+        # Every new ashell process starts visible; discard old session state.
+        if state.get('pid') != pid:
+            state = {'pid': pid, 'visible': True, 'idle_hidden': False}
+
+        def set_visible(wanted):
+            if state['visible'] != wanted:
+                subprocess.run(['ashell', 'msg', 'toggle-visibility'],
+                               check=True, stdout=subprocess.DEVNULL)
+                state['visible'] = wanted
+
+        if action == 'toggle':
+            set_visible(not state['visible'])
+            state['idle_hidden'] = False
+        elif action == 'idle-hide':
+            if state['visible']:
+                set_visible(False)
+                state['idle_hidden'] = True
+        elif action == 'idle-resume':
+            if state['idle_hidden']:
+                set_visible(True)
+                state['idle_hidden'] = False
+        else:
+            print(json.dumps(state))
+        state_path.write_text(json.dumps(state) + '\n')
+
+
+if __name__ == '__main__':
+    try:
+        main(sys.argv[1] if len(sys.argv) == 2 else '')
+    except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
+        print(f'dotfiles-bar: {error}', file=sys.stderr)
+        sys.exit(1)

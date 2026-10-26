@@ -1,69 +1,26 @@
-#!/bin/bash
-##############################################################################
-# keyboard-backlight
-# -----------
-# For when you are running leeenux on a Mac and it needs some help
-#
-# Usage:
-# 	keyboard-backlight {up,down,total,off}
-#
-# :authors: Jess Frazelle, @jessfraz
-# :date: 8 June 2015
-# :version: 0.0.1
-##############################################################################
-set -e
-set -o pipefail
-
-BACKLIGHT=$(cat /sys/class/leds/smc::kbd_backlight/brightness)
-INCREMENT=15
-
-if [ $UID -ne 0 ]; then
-	echo "Please run this program as superuser"
-	exit 1
-fi
-
-SET_VALUE=0
-case $1 in
-
-	up)
-		TOTAL=$((BACKLIGHT + INCREMENT))
-		if [ "$TOTAL" -gt "255" ]; then
-			exit 1
-		fi
-		SET_VALUE=1
-		;;
-	down)
-		TOTAL=$((BACKLIGHT - INCREMENT))
-		if [ "$TOTAL" -lt "0" ]; then
-			exit 1
-		fi
-		SET_VALUE=1
-		;;
-	total)
-		TEMP_VALUE=$BACKLIGHT
-		while [ "$TEMP_VALUE" -lt "255" ]; do
-			TEMP_VALUE=$((TEMP_VALUE + 1))
-			if [ $TEMP_VALUE -gt "255" ]; then
-				TEMP_VALUE=255
-			fi
-			echo $TEMP_VALUE > /sys/class/leds/smc::kbd_backlight/brightness
-		done
-		;;
-	off)
-		TEMP_VALUE=$BACKLIGHT
-		while [ "$TEMP_VALUE" -gt "0" ]; do
-			TEMP_VALUE=$((TEMP_VALUE - 1))
-			if [ $TEMP_VALUE -lt "0" ]; then
-				TEMP_VALUE=0
-			fi
-			echo $TEMP_VALUE > /sys/class/leds/smc::kbd_backlight/brightness
-		done
-		;;
-	*)
-		echo "Use: keyboard-backlight up|down|total|off"
-		;;
+#!/usr/bin/env bash
+# Originally by Jess Frazelle; use brightnessctl rather than a Mac-specific sysfs path.
+set -euo pipefail
+case "${1:-}" in
+    --help|-h|'')
+        echo 'Usage: keyboard-backlight {up|down|total|off|info}'
+        echo 'Set KEYBOARD_BACKLIGHT_DEVICE to select a specific LED device.'
+        exit 0 ;;
+    up) operation=(set +5%) ;;
+    down) operation=(set 5%-) ;;
+    total) operation=(set 100%) ;;
+    off) operation=(set 0) ;;
+    info) operation=(info) ;;
+    *) echo 'Unknown keyboard-backlight action.' >&2; exit 2 ;;
 esac
-
-if [ $SET_VALUE -eq "1" ]; then
-	echo "$TOTAL" > /sys/class/leds/smc::kbd_backlight/brightness
+command -v brightnessctl >/dev/null || { echo 'This command requires brightnessctl.' >&2; exit 127; }
+device=${KEYBOARD_BACKLIGHT_DEVICE:-}
+if [[ -z $device ]]; then
+    for path in /sys/class/leds/*kbd_backlight*; do
+        [[ -r $path/brightness ]] || continue
+        device=${path##*/}
+        break
+    done
 fi
+[[ -n $device ]] || { echo 'No keyboard backlight was detected on this machine.' >&2; exit 1; }
+exec brightnessctl --class leds --device "$device" "${operation[@]}"

@@ -24,7 +24,7 @@ calc() {
 # Create a new directory and enter it
 mkd() {
 	mkdir -p "$@"
-	cd "$@" || exit
+	cd "$@" || return
 }
 
 # Make a temporary directory and enter it
@@ -35,7 +35,7 @@ tmpd() {
 	else
 		dir=$(mktemp -d -t "${1}.XXXXXXXXXX")
 	fi
-	cd "$dir" || exit
+	cd "$dir" || return
 }
 
 # Create a .tar.gz archive, using `zopfli`, `pigz` or `gzip` for compression
@@ -43,10 +43,8 @@ targz() {
 	local tmpFile="${1%/}.tar"
 	tar -cvf "${tmpFile}" --exclude=".DS_Store" "${1}" || return 1
 
-	size=$(
-	stat -f"%z" "${tmpFile}" 2> /dev/null; # OS X `stat`
-	stat -c"%s" "${tmpFile}" 2> /dev/null # GNU `stat`
-	)
+	local size
+	size=$(stat -c '%s' "${tmpFile}") || return
 
 	local cmd=""
 	if (( size < 52428800 )) && hash zopfli 2> /dev/null; then
@@ -98,22 +96,12 @@ dataurl() {
 	echo "data:${mimeType};base64,$(openssl base64 -in "$1" | tr -d '\n')"
 }
 
-# Create a git.io short URL
-gitio() {
-	if [ -z "${1}" ] || [ -z "${2}" ]; then
-		echo "Usage: \`gitio slug url\`"
-		return 1
-	fi
-	curl -i https://git.io/ -F "url=${2}" -F "code=${1}"
-}
-
 # Start an HTTP server from a directory, optionally specifying the port
 server() {
 	local port="${1:-8000}"
 	sleep 1 && open "http://localhost:${port}/" &
-	# Set the default Content-Type to `text/plain` instead of `application/octet-stream`
-	# And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
-	python2 -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port"
+	# Python 3 server, bound to this machine for local development.
+	python3 -m http.server "$port" --bind 127.0.0.1
 }
 
 # Compare original and gzipped file size
@@ -131,10 +119,10 @@ gz() {
 # Syntax-highlight JSON strings or files
 # Usage: `json '{"foo":42}'` or `echo '{"foo":42}' | json`
 json() {
-	if [ -t 0 ]; then # argument
-		python -mjson.tool <<< "$*" | pygmentize -l javascript
+	if [ $# -gt 0 ]; then # argument
+		python3 -m json.tool <<< "$*"
 	else # pipe
-		python -mjson.tool | pygmentize -l javascript
+		python3 -m json.tool
 	fi
 }
 
@@ -150,9 +138,7 @@ mwiki() {
 
 # UTF-8-encode a string of Unicode symbols
 escape() {
-	local args
-	mapfile -t args < <(printf "%s" "$*" | xxd -p -c1 -u)
-	printf "\\\\x%s" "${args[@]}"
+	printf '%s' "$*" | python3 -c 'import sys; print("".join("\\x%02X" % b for b in sys.stdin.buffer.read()), end="")'
 	# print a newline unless we’re piping the output to another program
 	if [ -t 1 ]; then
 		echo ""; # newline
@@ -161,7 +147,7 @@ escape() {
 
 # Decode \x{ABCD}-style Unicode escape sequences
 unidecode() {
-	perl -e "binmode(STDOUT, ':utf8'); print \"$*\""
+	python3 -c 'import codecs, sys; print(codecs.decode(sys.argv[1], "unicode_escape"), end="")' "$*"
 	# print a newline unless we’re piping the output to another program
 	if [ -t 1 ]; then
 		echo ""; # newline
@@ -170,7 +156,7 @@ unidecode() {
 
 # Get a character’s Unicode code point
 codepoint() {
-	perl -e "use utf8; print sprintf('U+%04X', ord(\"$*\"))"
+	python3 -c 'import sys; print("U+%04X" % ord(sys.argv[1][0]), end="")' "$*"
 	# print a newline unless we’re piping the output to another program
 	if [ -t 1 ]; then
 		echo ""; # newline
@@ -264,10 +250,11 @@ repo() {
 	# Validate that this folder is a git folder
 	if ! git branch 2>/dev/null 1>&2 ; then
 		echo "Not a git repo!"
-		exit $?
+		return 1
 	fi
 
 	# Find current directory relative to .git parent
+	local full_path git_base_path relative_path git_where branch tree url
 	full_path=$(pwd)
 	git_base_path=$(cd "./$(git rev-parse --show-cdup)" || exit 1; pwd)
 	relative_path=${full_path#$git_base_path} # remove leading git_base_path from working directory
@@ -310,7 +297,11 @@ man() {
 openimage() {
 	local types='*.jpg *.JPG *.png *.PNG *.gif *.GIF *.jpeg *.JPEG'
 
-	cd "$(dirname "$1")" || exit
+	if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+		xdg-open "$1"
+		return
+	fi
+	cd "$(dirname "$1")" || return
 	local file
 	file=$(basename "$1")
 
@@ -337,10 +328,10 @@ dbs() {
 isup() {
 	local uri=$1
 
-	if curl -s --head  --request GET "$uri" | grep "200 OK" > /dev/null ; then
-		notify-send --urgency=critical "$uri is down"
-	else
+	if curl -fsI --max-time 15 "$uri" >/dev/null; then
 		notify-send --urgency=low "$uri is up"
+	else
+		notify-send --urgency=critical "$uri is down"
 	fi
 }
 
@@ -402,16 +393,17 @@ gogo(){
 	d=${d%/}
 
 	# search for the project dir in the GOPATH
-	mapfile -t path < <(find "${GOPATH}/src" \( -type d -o -type l \) -iname "$d"  | awk '{print length, $0;}' | sort -n | awk '{print $2}')
+	local project_dir
+	project_dir=$(find "${GOPATH}/src" \( -type d -o -type l \) -iname "$d" -print -quit 2>/dev/null)
 
-	if [ "${path[0]}" == "" ] || [ "${path[*]}" == "" ]; then
+	if [ -z "$project_dir" ]; then
 		echo "Could not find a directory named $d in $GOPATH"
 		echo "Maybe you need to 'go get' it ;)"
 		return 1
 	fi
 
 	# enter the first path found
-	cd "${path[0]}" || return 1
+	cd "$project_dir" || return 1
 }
 
 golistdeps(){
@@ -426,6 +418,10 @@ golistdeps(){
 
 # get the name of a x window
 xname(){
+	if [ $# -eq 0 ] && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+		hyprctl -j activewindow
+		return
+	fi
 	local window_id=$1
 
 	if [[ -z $window_id ]]; then
@@ -447,23 +443,12 @@ xname(){
 		-e "\${g; p}"
 }
 
-dell_monitor() {
-	xrandr --newmode "3840x2160_30.00"  338.75  3840 4080 4488 5136  2160 2163 2168 2200 -hsync +vsync
-	xrandr --addmode  DP1 "3840x2160_30.00"
-	xrandr --output eDP1 --auto --primary --output DP1 --mode 3840x2160_30.00 --above eDP1 --rate 30
-}
-
 govendorcheck() {
-	# shellcheck disable=SC2046
-	vendorcheck -u ./... | awk '{print $NF}' | sed -e "s#^github.com/jessfraz/$(basename $(pwd))/##"
+	vendorcheck -u ./... | awk '{print $NF}'
 }
 
 restart_gpgagent(){
-	# Restart the gpg agent.
-	# shellcheck disable=SC2046
-	kill -9 $(pidof scdaemon) >/dev/null 2>&1
-	# shellcheck disable=SC2046
-	kill -9 $(pidof gpg-agent) >/dev/null 2>&1
+	gpgconf --kill gpg-agent
 	gpg-connect-agent /bye >/dev/null 2>&1
 	gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1
 }

@@ -1,0 +1,122 @@
+# Keep the English UI, with metric weather and European date formatting.
+language = "en-US"
+region = "en-GB"
+outputs = { Targets = ["DP-1"] }
+position = "Top"
+
+[logging]
+level = "warn"
+
+[modules]
+left = [ [ "Updates", "Workspaces", "KeyboardSubmap" ] ]
+center = [ "WindowTitle" ]
+right = [ [ "SystemInfo", "GpuUsage" ], "MediaPlayer", [ "Screenshot", "KeyboardLayout" ], [ "Tray", "Privacy", "Settings", "Tempo" ] ]
+
+[keyboard_layout.labels]
+"EurKEY (US)" = "EU"
+"German (no dead keys)" = "DE"
+"German" = "DE"
+
+# Same mouse actions as the old Waybar screenshot button.
+[[CustomModule]]
+name = "Screenshot"
+icon = "󱒃"
+command = "~/.local/bin/dotfiles-hypr screenshot full"
+on_middle_click = "~/.local/bin/dotfiles-hypr screenshot window"
+on_right_click = "~/.local/bin/dotfiles-hypr screenshot area"
+
+[[CustomModule]]
+name = "GpuUsage"
+type = "Text"
+listen_cmd = "exec python3 ~/.config/ashell/gpu.py"
+
+[updates]
+check_cmd = "yay -Qu"
+update_cmd = 'kitty -e bash -c "yay; echo Done - Press enter to exit; read" &'
+interval = 3600
+
+[workspaces]
+visibility_mode = "All"
+group_by_monitor = false
+enable_workspace_filling = true
+
+[window_title]
+mode = "Title"
+truncate_title_after_length = 100
+
+[system_info]
+indicators = [ "Cpu", "Memory", "Temperature", { Disk = "/", Name = "Root" }, "IpAddress" ]
+interval = 5
+
+[system_info.cpu]
+warn_threshold = 60
+alert_threshold = 80
+
+[system_info.memory]
+warn_threshold = 70
+alert_threshold = 85
+
+[system_info.temperature]
+warn_threshold = 60
+alert_threshold = 80
+sensor = "Cpu"
+units = "Celsius"
+
+[system_info.disk]
+warn_threshold = 80
+alert_threshold = 90
+format = "Percentage"
+mounts = ["/"]
+
+[tempo]
+clock_format = "%a %d.%m.%Y %H:%M"
+# Right-click the clock to switch between minute and second precision.
+formats = [ "%a %d.%m.%Y %H:%M", "%a %d.%m.%Y %H:%M:%S" ]
+# timezones = [ "UTC", "America/New_York", "Europe/London" ]
+weather_location = { City = "Hemmersdorf" }
+# weather_location = { Coordinates = [40.7128, -74.0060] }
+# weather_location = "Current"
+weather_indicator = "IconAndTemperature"
+
+[settings]
+lock_cmd = "~/.local/bin/dotfiles-hypr lock &"
+audio_sinks_more_cmd = "pavucontrol -t 3"
+audio_sources_more_cmd = "pavucontrol -t 4"
+wifi_more_cmd = "kitty -e nmtui"
+vpn_more_cmd = "kitty -e nmtui"
+bluetooth_more_cmd = "kitty -e bluetoothctl"
+battery_format = "IconAndPercentage"
+peripheral_battery_format = "Icon"
+audio_indicator_format = "IconAndPercentage"
+microphone_indicator_format = "Icon"
+network_indicator_format = "IconAndName"
+bluetooth_indicator_format = "Icon"
+brightness_indicator_format = "Icon"
+indicators = [ "IdleInhibitor", "PowerProfile", "Audio", "Microphone", "Bluetooth", "Network", "Vpn", "Battery", "Brightness" ]
+
+[appearance]
+font_name = "Noto Sans"
+scale_factor = 1.18
+opacity = { default = 0.82, menu = 0.92 }
+blur = "never"
+
+primary_color = "#6f8fd6"
+success_color = "#80a45f"
+text_color = "#929bb0"
+workspace_colors = [ "#6f8fd6", "#80a45f" ]
+special_workspace_colors = [ "#6f8fd6", "#80a45f" ]
+
+[appearance.danger_color]
+base = "#d06775"
+weak = "#c08a4a"
+
+[appearance.background_color]
+base = "#090a0f"
+weak = "#11131b"
+strong = "#2a3040"
+
+[appearance.bar]
+surface = "transparent"
+
+[appearance.menu]
+backdrop = 0.20

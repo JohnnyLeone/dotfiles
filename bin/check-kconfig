@@ -17,6 +17,12 @@
 set -e
 set -o pipefail
 
+if [[ ${1:-} == --help || ${1:-} == -h ]]; then
+    echo 'Usage: check-kconfig [KERNEL_CONFIG_FILE] [--flag CONFIG_NAME ...]'
+    echo 'Read-only inspection of container and kernel options; some optional checks target older kernels.'
+    exit 0
+fi
+
 EXITCODE=0
 
 # bits of this were adapted from lxc-checkconfig
@@ -31,17 +37,21 @@ possibleConfigs=(
 '/usr/src/linux/.config'
 )
 
-if [ $# -gt 0 ]; then
-	CONFIG="$1"
-else
-	: "${CONFIG:="${possibleConfigs[0]}"}"
-fi
-
-if ! command -v zgrep &> /dev/null; then
-	zgrep() {
-		zcat "$2" | grep "$1"
-	}
-fi
+requested_flags=()
+config_argument=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --flag)
+            [[ $# -ge 2 && ${2#CONFIG_} =~ ^[A-Z0-9_]+$ ]] || { echo 'Expected a kernel flag name after --flag.' >&2; exit 2; }
+            requested_flags+=("${2#CONFIG_}")
+            shift 2 ;;
+        -*) echo "Unknown option: $1" >&2; exit 2 ;;
+        *) ! $config_argument || { echo 'Specify only one config file.' >&2; exit 2; }
+           CONFIG=$1; config_argument=true; shift ;;
+    esac
+done
+: "${CONFIG:=${possibleConfigs[0]}}"
+command -v zgrep >/dev/null || { echo 'check-kconfig requires zgrep (gzip).' >&2; exit 127; }
 
 kernelVersion="$(uname -r)"
 kernelMajor="${kernelVersion%%.*}"
@@ -49,13 +59,13 @@ kernelMinor="${kernelVersion#$kernelMajor.}"
 kernelMinor="${kernelMinor%%.*}"
 
 is_set() {
-	zgrep "CONFIG_$1=[y|m]" "$CONFIG" > /dev/null
+	zgrep -Eq "^CONFIG_$1=(y|m)$" "$CONFIG"
 }
 is_set_in_kernel() {
-	zgrep "CONFIG_$1=y" "$CONFIG" > /dev/null
+	zgrep -Eq "^CONFIG_$1=y$" "$CONFIG"
 }
 is_set_as_module() {
-	zgrep "CONFIG_$1=m" "$CONFIG" > /dev/null
+	zgrep -Eq "^CONFIG_$1=m$" "$CONFIG"
 }
 
 color() {
@@ -123,11 +133,12 @@ check_flags() {
 check_flag_not_set() {
 	if is_set_in_kernel "$1"; then
 		wrap_bad "CONFIG_$1" 'enabled'
+		EXITCODE=1
 	elif is_set_as_module "$1"; then
 		wrap_bad "CONFIG_$1" 'enabled (as module)'
+		EXITCODE=1
 	else
 		wrap_good "CONFIG_$1" 'not enabled'
-		EXITCODE=1
 	fi
 }
 check_flags_not_set() {
@@ -186,12 +197,19 @@ fi
 wrap_color "info: reading kernel config from $CONFIG ..." white
 echo
 
+if [[ ${#requested_flags[@]} -gt 0 ]]; then
+    check_flags "${requested_flags[@]}"
+    exit "$EXITCODE"
+fi
+
 echo 'Generally Necessary for Containers:'
 
 echo -n '- '
 cgroupSubsystemDir="$(awk '/[, ](cpu|cpuacct|cpuset|devices|freezer|memory)[, ]/ && $3 == "cgroup" { print $2 }' /proc/mounts | head -n1)"
 cgroupDir="$(dirname "$cgroupSubsystemDir")"
-if [ -d "$cgroupDir/cpu" ] || [ -d "$cgroupDir/cpuacct" ] || [ -d "$cgroupDir/cpuset" ] || [ -d "$cgroupDir/devices" ] || [ -d "$cgroupDir/freezer" ] || [ -d "$cgroupDir/memory" ]; then
+if [ -r /sys/fs/cgroup/cgroup.controllers ]; then
+	wrap_good 'cgroup hierarchy' 'cgroup v2 mounted'
+elif [ -d "$cgroupDir/cpu" ] || [ -d "$cgroupDir/cpuacct" ] || [ -d "$cgroupDir/cpuset" ] || [ -d "$cgroupDir/devices" ] || [ -d "$cgroupDir/freezer" ] || [ -d "$cgroupDir/memory" ]; then
 	echo "$(wrap_good 'cgroup hierarchy' 'properly mounted') [$cgroupDir]"
 else
 	if [ "$cgroupSubsystemDir" ]; then

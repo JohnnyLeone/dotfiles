@@ -1,10 +1,7 @@
-# go path
-export GOPATH=$HOME/.go
-
-# update path
-export PATH=$HOME/bin:/usr/local/bin:$GOPATH/bin:/sbin:$PATH
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# update cdpath
-export CDPATH=${CDPATH}:$GOPATH/src/github.com:$GOPATH/src/golang.org:$GOPATH/src
-
+# Zsh's tied path array avoids duplicates when a shell is reloaded.
+if [ -n "${ZSH_VERSION:-}" ]; then
+    typeset -U path PATH
+    path=("$HOME/.local/bin" "$HOME/bin" "$GOPATH/bin" "$HOME/.cargo/bin" "$HOME/.dotnet/tools" $path)
+else
+    export PATH="$HOME/.local/bin:$HOME/bin:$GOPATH/bin:$HOME/.cargo/bin:$HOME/.dotnet/tools:$PATH"
+fi

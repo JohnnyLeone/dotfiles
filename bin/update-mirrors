@@ -1,40 +1,36 @@
-#!/bin/bash
-##############################################################################
-# update-mirrors
-# -----------
-# This script assumes you have paths in your $HOME that are
-# git repos (which are mirrors).
-#
-# It will fetch from origin and push the changes to the mirror.
-#
-# :authors: Jess Frazelle, @jessfraz
-# :date: 8 June 2015
-# :version: 0.0.1
-##############################################################################
-set -e
-set -o pipefail
-
-update_mirrors() {
-	# find all the dirs in $HOME
-	find "$HOME" -maxdepth 1 -type d -not -path '*/\.*' -not -path "$HOME" -print0 | while read -d '' -r dir; do
-	# subshell because we cd
-	(
-	cd "$dir"
-
-	# check the git remote
-	local ismirror
-	ismirror=$(git config --get remote.origin.mirror 2>/dev/null)
-	if [[ "$ismirror" == "true" ]]; then
-		echo "$(basename "$dir") is a git mirror"
-
-		# fetch and push
-		git fetch -p origin
-		git push --mirror
-
-		echo "Updated $(git config --get remote.origin.url) to $(git config --get remote.origin.pushurl)"
-	fi
-	)
+#!/usr/bin/env bash
+# Git mirror maintenance, originally by Jess Frazelle.
+set -euo pipefail
+apply=false
+parent=$HOME
+directory_argument=false
+for arg in "$@"; do
+    case "$arg" in
+        --apply) apply=true ;;
+        --help|-h)
+            echo 'Usage: update-mirrors [DIRECTORY] [--apply]'
+            echo 'Plans updates for mirror repos directly under DIRECTORY (default: home).'
+            echo 'Requires a distinct, explicit origin pushurl. --apply fetches and mirrors all refs.'
+            exit 0 ;;
+        -*) echo "Unknown option: $arg" >&2; exit 2 ;;
+        *) ! $directory_argument || { echo 'Specify only one directory.' >&2; exit 2; }
+           parent=$arg; directory_argument=true ;;
+    esac
 done
-}
-
-update_mirrors "$@"
+[[ -d $parent ]] || { echo 'Directory does not exist.' >&2; exit 2; }
+while IFS= read -r -d '' repo; do
+    git -C "$repo" rev-parse --git-dir >/dev/null 2>&1 || continue
+    [[ $(git -C "$repo" config --get remote.origin.mirror 2>/dev/null || true) == true ]] || continue
+    source=$(git -C "$repo" remote get-url origin)
+    target=$(git -C "$repo" config --get remote.origin.pushurl || true)
+    if [[ -z $target || $target == "$source" ]]; then
+        printf 'Skipping %s: configure a separate origin pushurl first.\n' "$repo" >&2
+        continue
+    fi
+    printf 'Mirror %s: %s -> %s\n' "$repo" "$source" "$target"
+    if $apply; then
+        git -C "$repo" fetch --prune origin
+        git -C "$repo" push --mirror
+    fi
+done < <(find "$parent" -mindepth 1 -maxdepth 1 -type d -print0)
+$apply || echo 'Preview only. Add --apply to fetch and mirror the configured repositories.'
