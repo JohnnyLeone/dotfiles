@@ -38,6 +38,7 @@ and SSH logins too, run `chsh -s /usr/bin/zsh`, then log in again.
 | `.config/ashell/` | Status bar and AMD GPU usage helper |
 | `.config/kitty/`, `.config/nvim/`, `.config/vicinae/` | Current application settings |
 | `.config/gtk-3.0/`, `.gtkrc-2.0` | Adwaita, Noto Sans, and cursor settings for GTK apps |
+| `.config/pipewire/` | Soundcraft Ui24R main, music, voice outputs, mono mic, and AirPlay discovery |
 | `.zshrc`, `.aliases`, `.functions`, `.exports`, `.path` | Shell, completion, aliases, utilities |
 | `.dockerfunc` | Three portable container helpers; no desktop-app wrappers |
 | `.vimrc`, `.tmux.conf`, `.gitconfig`, `gitignore`, `.inputrc` | Editor, terminal, Git, and readline preferences |
@@ -50,6 +51,8 @@ and SSH logins too, run `chsh -s /usr/bin/zsh`, then log in again.
 
 [Desktop guide](docs/desktop.md): Hyprland shortcuts, UWSM service setup,
 brightness keys, OLED idle timers, and recovery to a plain Hyprland session.
+
+[Audio guide](docs/audio.md): Ui24R channel mapping, installation, and per-app routing.
 
 ## Shell and editor
 
