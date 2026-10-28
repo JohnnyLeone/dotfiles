@@ -25,6 +25,7 @@ FILES = [
     '.config/systemd/user/vicinae.service.d/uwsm.conf',
     '.config/systemd/user/hypridle.service.d/uwsm.conf',
     '.config/systemd/user/udiskie.service',
+    '.local/share/dbus-1/services/org.freedesktop.Notifications.service',
 ]
 BINS = [
     'dotfiles-hypr', 'dotfiles-bar', 'dotfiles-oled', 'dotfiles-brightness', 'dotfiles-app',

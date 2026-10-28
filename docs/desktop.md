@@ -126,6 +126,33 @@ journalctl --user -b -u hypridle -u ashell -u vicinae -u udiskie
 To return to plain Hyprland, log out and select its regular entry in Ly. Keep the
 UWSM service conditions in place while both startup paths are available.
 
+## Notifications
+
+Ashell handles desktop notifications through its built-in Notifications module.
+Click the bell beside Privacy/Settings to view messages, grouped by application,
+with bodies and timestamps. Clicking a message invokes its default action when
+the application provides one. The Clear button removes all messages.
+Up to three popups appear at the top right, with a five-second default timeout;
+applications can request a different timeout. Notifications are stored only in
+memory and are lost when Ashell exits.
+
+The installer links
+`~/.local/share/dbus-1/services/org.freedesktop.Notifications.service` so
+notification requests can start `ashell.service`. Ashell is the sole
+notification daemon. After installing the activation entry, refresh D-Bus:
+
+```sh
+busctl --user call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus ReloadConfig
+```
+
+In a UWSM session, `systemctl --user restart ashell.service` applies settings
+that require a restart. The regular Hyprland fallback starts Ashell directly
+at login. To confirm the active daemon:
+
+```sh
+busctl --user call org.freedesktop.Notifications /org/freedesktop/Notifications org.freedesktop.Notifications GetServerInformation
+```
+
 ## Status bar and OLED protection
 
 Ashell shows CPU/RAM, CPU temperature, root disk usage, network IP, GPU usage,

@@ -10,7 +10,19 @@ level = "warn"
 [modules]
 left = [ [ "Updates", "Workspaces", "KeyboardSubmap" ] ]
 center = [ "WindowTitle" ]
-right = [ [ "SystemInfo", "GpuUsage" ], "MediaPlayer", [ "Screenshot", "KeyboardLayout" ], [ "Tray", "Privacy", "Settings", "Tempo" ] ]
+right = [ [ "SystemInfo", "GpuUsage" ], "MediaPlayer", [ "Screenshot", "KeyboardLayout" ], [ "Tray", "Privacy", "Notifications", "Settings", "Tempo" ] ]
+
+[notifications]
+format = "%d.%m. %H:%M"
+show_timestamps = true
+show_bodies = true
+grouped = true
+toast = true
+toast_position = "TopRight"
+# Applications can override this default timeout.
+toast_timeout = 5000
+toast_limit = 3
+toast_max_height = 150
 
 [keyboard_layout.labels]
 "EurKEY (US)" = "EU"
