@@ -22,6 +22,7 @@ FILES = [
     '.config/pipewire/pipewire.conf.d/raop-discover.conf',
     '.config/uwsm/env', '.config/uwsm/env-hyprland',
     '.config/systemd/user/ashell.service.d/uwsm.conf',
+    '.config/systemd/user/ashell.service.d/notifications.conf',
     '.config/systemd/user/vicinae.service.d/uwsm.conf',
     '.config/systemd/user/hypridle.service.d/uwsm.conf',
     '.config/systemd/user/udiskie.service',

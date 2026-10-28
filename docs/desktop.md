@@ -138,10 +138,13 @@ memory and are lost when Ashell exits.
 
 The installer links
 `~/.local/share/dbus-1/services/org.freedesktop.Notifications.service` so
-notification requests can start `ashell.service`. Ashell is the sole
-notification daemon. After installing the activation entry, refresh D-Bus:
+notification requests can start `ashell.service`. Its notification service
+drop-in waits for Ashell to acquire the notification D-Bus name before startup
+completes. Ashell is the sole notification daemon. After installing the service
+configuration and activation entry, refresh systemd and D-Bus:
 
 ```sh
+systemctl --user daemon-reload
 busctl --user call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus ReloadConfig
 ```
 
