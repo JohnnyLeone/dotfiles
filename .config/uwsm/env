@@ -1,0 +1,8 @@
+# Shared graphical-session environment, loaded before services and applications.
+export XCURSOR_THEME=Adwaita
+export XCURSOR_SIZE=24
+# Launchers and systemd services must also find the installed dotfiles helpers.
+case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac

@@ -23,6 +23,9 @@ installation or checks.
 | `passmenu [--type]` | Choose a password-store entry with Vicinae and copy/type its first line | `pass`; Vicinae/bemenu; optional `wtype` for typing |
 | `check-kconfig [FILE] [--flag NAME ...]` | Read-only kernel-option inspection | `zgrep` from gzip |
 | `dotfiles-hypr` / `dotfiles-bar` | Existing screenshots, locking, reload, and bar visibility | Current desktop components |
+| `dotfiles-oled idle-dim/idle-resume` | Save, dim, and restore ASUS OLED brightness for hypridle | `ddcutil`, monitor DDC/CI and I²C access |
+| `dotfiles-brightness up/down` | Route brightness keys to the active ASUS OLED, or the active internal backlight | `hyprctl`; `ddcutil` for OLED, `brightnessctl` for internal panel |
+| `dotfiles-app COMMAND [ARGUMENTS...]` | Launch graphical apps in UWSM units, with direct execution in plain sessions | `uwsm` for managed sessions |
 
 ## Git and GitHub
 
@@ -74,7 +77,7 @@ exposes no compatible keyboard backlight; `info` reports that without changing L
 `xname` without arguments prints the active Hyprland window's JSON for writing rules;
 an explicit X11 window ID keeps the original xprop inspection behavior.
 
-## GnuPG, kernel checks, and optional application settings
+## GnuPG and kernel checks
 
 GnuPG preferences remain available in `.gnupg/`, without a hardcoded signing key,
 retired keyserver, or pinned historical cipher preferences. They are not installed
@@ -93,6 +96,5 @@ a saved kernel config as the first argument. The original broader groups remain
 available when no flags are supplied; they include optional/historical features
 and are not a current security certification for this machine.
 
-IRC themes and plugins remain under `.irssi/`; install only the additions you want
-if you use Irssi. Server identities and runtime state are excluded by `.gitignore`.
-The small `.rainbow_config.json` preferences are also retained for optional use.
+The unused Irssi and Rainbowstream configurations were archived on 2026-10-28.
+See [cleanup history](cleanup.md) for the recovery location.

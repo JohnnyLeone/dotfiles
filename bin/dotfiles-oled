@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""Coordinate idle dimming and manual brightness changes on the ASUS OLED."""
+import fcntl
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+MONITOR = ['--model', 'PG32UCDM3']
+
+
+def ddc(*args):
+    result = subprocess.run(['ddcutil', *MONITOR, *args], text=True,
+                            capture_output=True, timeout=30)
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or 'DDC/CI failed')
+    return result.stdout
+
+
+def brightness():
+    for line in ddc('getvcp', '10', '--terse').splitlines():
+        fields = line.split()
+        if len(fields) == 5 and fields[:3] == ['VCP', '10', 'C']:
+            current, maximum = map(int, fields[3:])
+            if 0 <= current <= maximum and maximum > 0:
+                return current, maximum
+    raise RuntimeError('The monitor did not report a valid brightness value.')
+
+
+def main(action):
+    if action not in ('idle-dim', 'idle-resume', 'up', 'down'):
+        raise ValueError('Usage: dotfiles-oled {idle-dim|idle-resume|up|down}')
+    runtime = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}')) / 'dotfiles'
+    runtime.mkdir(parents=True, exist_ok=True, mode=0o700)
+    state_path = runtime / 'oled.json'
+    with (runtime / 'oled.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if action == 'idle-dim':
+            # Duplicate idle events must not dim twice or overwrite the original.
+            if state_path.exists():
+                return
+            current, maximum = brightness()
+            dimmed = max(1, current - round(maximum * 0.20))
+            if dimmed >= current:
+                return
+            # Save before writing so even a failed/partial DDC write is recoverable.
+            state_path.write_text(json.dumps({'original': current, 'dimmed': dimmed}) + '\n')
+            ddc('setvcp', '10', str(dimmed))
+        elif action in ('up', 'down'):
+            current, maximum = brightness()
+            if state_path.exists():
+                state = json.loads(state_path.read_text())
+                # A keypress also wakes hypridle. Adjust the original value even
+                # if its resume handler has not restored it yet.
+                if current == state['dimmed']:
+                    current = state['original']
+            step = max(1, round(maximum * 0.05))
+            wanted = max(1, min(maximum, current + (step if action == 'up' else -step)))
+            ddc('setvcp', '10', str(wanted))
+            state_path.unlink(missing_ok=True)
+        elif state_path.exists():
+            state = json.loads(state_path.read_text())
+            # The separate DPMS listener may still be waking the monitor.
+            for attempt in range(3):
+                try:
+                    current, _ = brightness()
+                    # Preserve brightness changed manually while idle.
+                    if current == state['dimmed']:
+                        ddc('setvcp', '10', str(state['original']))
+                    state_path.unlink()
+                    break
+                except (RuntimeError, subprocess.TimeoutExpired):
+                    if attempt == 2:
+                        raise
+                    time.sleep(2)
+
+
+if __name__ == '__main__':
+    try:
+        main(sys.argv[1] if len(sys.argv) == 2 else '')
+    except (OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as error:
+        print(f'dotfiles-oled: {error}', file=sys.stderr)
+        sys.exit(1)

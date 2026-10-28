@@ -1,5 +1,5 @@
-set nocompatible              " be iMproved, required
-filetype plugin indent on     " required
+" Shared Vimscript settings, primarily used by Neovim.
+filetype plugin indent on
 
 if !has('nvim') && isdirectory(expand('~/.local/share/nvim/site'))
   set runtimepath+=~/.local/share/nvim/site
@@ -16,10 +16,6 @@ Plug 'chrisbra/Colorizer'
 Plug 'preservim/nerdtree'
 Plug 'preservim/tagbar'
 Plug 'easymotion/vim-easymotion'
-" Syntastic's old buffer hooks are incompatible with current Neovim.
-if !has('nvim')
-  Plug 'scrooloose/syntastic'
-endif
 Plug 'preservim/nerdcommenter'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-surround'
@@ -32,7 +28,9 @@ Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'jamessan/vim-gnupg'
-Plug 'terryma/vim-multiple-cursors'
+if has('nvim')
+  Plug 'jake-stewart/multicursor.nvim', { 'branch': '1.0' }
+endif
 Plug 'reedes/vim-pencil'
 Plug 'dpelle/vim-LanguageTool'
 Plug 'junegunn/fzf'
@@ -48,17 +46,10 @@ endif
 " ===================== Settings ======================
 "
 
-"let g:hardtime_default_on = 1   " Get things hard
-
 set noerrorbells                " No beeps
 set number                      " Show line numbers
 set backspace=indent,eol,start  " Makes backspace key more powerful.
 set showcmd                     " Show me what I'm typing
-set showmode                    " Show current mode.
-
-"set noswapfile                  " Don't use swapfile
-"set nobackup                    " Don't create annoying backup files
-"set nowritebackup
 set splitright                  " Split vertical windows right to the current windows
 set splitbelow                  " Split horizontal windows below to the current windows
 set encoding=utf-8              " Set default encoding to UTF-8
@@ -71,7 +62,7 @@ set hidden
 set ruler                       " Show the cursor position all the time
 au FocusLost * :wa              " Set vim to save the file on focus out.
 
-set fileformats=unix,dos,mac    " Prefer Unix over Windows over OS 9 formats
+set fileformats=unix,dos
 
 set noshowmatch                 " Do not show matching brackets by flickering
 set noshowmode                  " We show the mode with airline or lightline
@@ -79,9 +70,6 @@ set incsearch                   " Shows the match while typing
 set hlsearch                    " Highlight found searches
 set ignorecase                  " Search case insensitive...
 set smartcase                   " ... but not when search pattern contains upper case characters
-set ttyfast
-" set ttyscroll=3                 " noop on linux ?
-set lazyredraw                  " Wait to redraw "
 
 " Speed up syntax highlighting
 set nocursorcolumn
@@ -89,7 +77,6 @@ set nocursorline
 
 syntax sync minlines=256
 set synmaxcol=300
-set re=1
 
 " Open help vertically
 command! -nargs=* -complete=help Help vertical belowright help <args>
@@ -98,7 +85,6 @@ autocmd FileType help wincmd L
 set formatoptions=qrn1
 set relativenumber
 
-set et
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -108,29 +94,18 @@ if has('mouse')
     set mouse=a
 endif
 
-" If linux then set ttymouse
-let s:uname = system("echo -n \"$(uname)\"")
-if !v:shell_error && s:uname == "Linux" && !has('nvim')
-    set ttymouse=xterm
-endif
-
 " Do not show stupid q: window
 map q: :q
-
-" Allow saving of files as sudo when I forgot to start vim using sudo.
-cmap w!! w !sudo tee > /dev/null %
 
 " This comes first, because we have mappings that depend on leader
 " With a map leader it's possible to do extra key combinations
 " i.e: <leader>w saves the current file
 let mapleader = ","
-let g:mapleader = ","
 
 " List chars with unicode
 exec "set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
 
 " Visual indication for long lines
-"set colorcolumn=91
 " But only show it when the line is actually long.
 highlight ColorColumn ctermbg=red
 call matchadd('ColorColumn', '\%91v', 100)
@@ -168,7 +143,6 @@ let g:vim_markdown_folding_disabled = 1
 " ====================== Vim-go =======================
 let g:go_fmt_fail_silently = 0
 let g:go_fmt_command = "goimports"
-let g:go_autodetect_gopath = 1
 let g:go_term_enabled = 1
 let g:go_snippet_engine = "ultisnips"
 let g:go_highlight_space_tab_error = 0
@@ -229,40 +203,26 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 " ===================== vim-json ======================
 let g:vim_json_syntax_conceal = 0
 
-" ===================== Syntastic =====================
-set statusline+=%#warningmsg#
-set statusline+=%{exists('*SyntasticStatuslineFlag')?SyntasticStatuslineFlag():''}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
 " ===================== Completion ====================
 " Built-in completion works without the retired deoplete/Python host stack.
 set completeopt=menu,menuone,noselect
 
-" ==================== vim-multiple-cursors ====================
-let g:multi_cursor_use_default_mapping=0
-let g:multi_cursor_next_key='<C-i>'
-let g:multi_cursor_prev_key='<C-y>'
-let g:multi_cursor_skip_key='<C-b>'
-let g:multi_cursor_quit_key='<Esc>'
-
-" Called once right before you start selecting multiple cursors
-function! Multiple_cursors_before()
-  if exists(':NeoCompleteLock')==2
-    exe 'NeoCompleteLock'
-  endif
-endfunction
-
-" Called once only when the multiple selection is canceled (default <Esc>)
-function! Multiple_cursors_after()
-  if exists(':NeoCompleteUnlock')==2
-    exe 'NeoCompleteUnlock'
-  endif
-endfunction
+" ==================== Multiple selections ====================
+" Preserve selection shortcuts without taking NERDTree's Ctrl+n mapping.
+if has('nvim')
+lua << EOF
+local ok, mc = pcall(require, 'multicursor-nvim')
+if ok then
+  mc.setup()
+  vim.keymap.set({'n', 'x'}, '<C-i>', function() mc.matchAddCursor(1) end)
+  mc.addKeymapLayer(function(set)
+    set({'n', 'x'}, '<C-y>', function() mc.matchAddCursor(-1) end)
+    set({'n', 'x'}, '<C-b>', function() mc.matchSkipCursor(1) end)
+    set('n', '<Esc>', mc.clearCursors)
+  end)
+end
+EOF
+endif
 
 " ================== NerdCommenter ====================
 " Add spaces after comment delimiters by default

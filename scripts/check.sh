@@ -7,9 +7,12 @@ done
 for script in bin/*; do
     if head -n 1 "$script" | rg -q 'bash'; then bash -n "$script"; fi
 done
+sh -n .config/uwsm/env .config/uwsm/env-hyprland
 python3 scripts/test_install.py
 python3 scripts/test_shell.py
 python3 scripts/test_tools.py
+python3 scripts/test_brightness.py
+python3 scripts/test_git.py
 Hyprland --verify-config -c "$PWD/.config/hypr/hyprland.lua"
 # An isolated tmux server avoids changing any existing session.
 socket="dotfiles-check-$$"
@@ -20,4 +23,8 @@ tmux -L "$socket" show-messages | if rg -i 'invalid|unknown|error'; then exit 1;
 nvim --headless -u "$PWD/.vimrc" -i NONE -c 'set filetype=markdown' \
     -c 'call assert_equal(1, &number)' -c 'call assert_equal(1, &relativenumber)' \
     -c 'if !empty(v:errors) || (!empty(v:errmsg) && v:errmsg !~# "^E31:") | cquit | endif' -c qa
+# Exercise plugin behavior when optional editor plugins have been installed.
+if [[ -d ${XDG_DATA_HOME:-$HOME/.local/share}/nvim/plugged/multicursor.nvim ]]; then
+    nvim --headless -u "$PWD/.vimrc" -i NONE -S scripts/test_editor.vim
+fi
 printf 'Dotfiles checks passed.\n'

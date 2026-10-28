@@ -126,6 +126,35 @@ elif "get-url" in args: print("https://example.invalid/source.git")
         missing = self.run_tool('check-kconfig', config, '--flag', 'FOO', success=False)
         self.assertNotEqual(missing.returncode, 0, 'A similarly named flag was mistaken for the requested one')
 
+    def test_app_launcher_preserves_arguments_in_plain_and_managed_sessions(self):
+        self.fake('test-app', '')
+        self.fake('uwsm', '')
+        self.env.pop('DOTFILES_UWSM_SESSION', None)
+        self.run_tool('dotfiles-app', 'test-app', 'argument with spaces', '--literal=$HOME')
+        self.assertEqual(self.calls(), [['test-app', 'argument with spaces', '--literal=$HOME']])
+        self.env['DOTFILES_UWSM_SESSION'] = '1'
+        self.run_tool('dotfiles-app', 'test-app', 'argument with spaces', '--literal=$HOME')
+        self.assertEqual(self.calls()[-1],
+                         ['uwsm', 'app', '--', 'test-app', 'argument with spaces', '--literal=$HOME'])
+
+    def test_managed_logout_closes_apps_then_stops_session(self):
+        self.fake('uwsm', '')
+        self.fake('hyprshutdown', '')
+        self.env['DOTFILES_UWSM_SESSION'] = '1'
+        self.run_tool('dotfiles-hypr', 'exit')
+        self.assertEqual(self.calls(), [['hyprshutdown', '--no-exit', '--no-fork'], ['uwsm', 'stop']])
+        self.env.pop('DOTFILES_UWSM_SESSION')
+        self.run_tool('dotfiles-hypr', 'exit')
+        self.assertEqual(self.calls()[-1], ['hyprshutdown'])
+
+    def test_failed_graceful_shutdown_does_not_force_logout(self):
+        self.fake('uwsm', '')
+        self.fake('hyprshutdown', 'sys.exit(1)')
+        self.env['DOTFILES_UWSM_SESSION'] = '1'
+        result = self.run_tool('dotfiles-hypr', 'exit', success=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.calls(), [['hyprshutdown', '--no-exit', '--no-fork']])
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=1)

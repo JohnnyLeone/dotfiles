@@ -1,7 +1,8 @@
--- Hyprland's native Lua configuration (0.55+; ready for the 0.57 transition).
--- Current Steam Deck / ASUS OLED settings and the familiar Sway workflow.
+-- Hyprland's native Lua configuration with optional UWSM session management.
+-- Steam Deck with ASUS OLED, dwindle layout, and keyboard-driven navigation.
 
-local terminal = "kitty"
+local app = "~/.local/bin/dotfiles-app "
+local terminal = app .. "kitty"
 local helper = "~/.local/bin/dotfiles-hypr "
 local bar = "~/.local/bin/dotfiles-bar "
 local mod = "SUPER"
@@ -12,16 +13,26 @@ hl.monitor({ output = "DP-1", mode = "3840x2160@120", position = "0x0", scale = 
 hl.monitor({ output = "eDP-1", disabled = true })
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
-hl.env("XCURSOR_THEME", "Adwaita")
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+local managed_session = os.getenv("DOTFILES_UWSM_SESSION") == "1"
+-- UWSM loads these before starting Hyprland. Keep plain sessions usable too.
+if not managed_session then
+    hl.env("XCURSOR_THEME", "Adwaita")
+    hl.env("XCURSOR_SIZE", "24")
+    hl.env("HYPRCURSOR_SIZE", "24")
+end
 
 -- The start event runs once per session, never during an ordinary config reload.
 hl.on("hyprland.start", function()
-    hl.exec_cmd("vicinae server")
-    hl.exec_cmd("ashell")
-    hl.exec_cmd("udiskie --tray")
-    hl.exec_cmd("command -v hypridle >/dev/null 2>&1 && hypridle")
+    if managed_session then
+        -- Export compositor-created variables and release session services.
+        hl.exec_cmd("uwsm finalize")
+    else
+        -- Fallback for Ly's regular Hyprland entry; service drop-ins exclude it.
+        hl.exec_cmd("vicinae server")
+        hl.exec_cmd("ashell")
+        hl.exec_cmd("udiskie --tray")
+        hl.exec_cmd("command -v hypridle >/dev/null 2>&1 && hypridle")
+    end
 end)
 
 hl.config({
@@ -41,8 +52,6 @@ hl.config({
     decoration = {
         rounding = 8,
         rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
         dim_inactive = true,
         dim_strength = 0.08,
         shadow = { enabled = false },
@@ -50,7 +59,6 @@ hl.config({
     },
     animations = { enabled = false },
     dwindle = { preserve_split = true },
-    master = { new_status = "master" },
     misc = {
         focus_on_activate = true,
         force_default_wallpaper = 0,
@@ -59,6 +67,7 @@ hl.config({
         vrr = 2,
     },
     render = {
+        -- Attempt direct scanout for game content.
         direct_scanout = 2,
         new_render_scheduling = true,
     },
@@ -71,17 +80,13 @@ hl.config({
     input = {
         kb_layout = "eu,de",
         kb_variant = ",nodeadkeys",
-        kb_model = "",
         kb_options = "caps:escape,grp:alt_shift_toggle",
-        kb_rules = "",
         follow_mouse = 1,
-        sensitivity = 0,
         touchpad = { natural_scroll = false },
     },
 })
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
-hl.device({ name = "epic-mouse-v1", sensitivity = -0.5 })
 
 -- Launchers, window controls, and OLED bar visibility.
 hl.bind(mod .. " + Return", dsp.exec_cmd(terminal))
@@ -92,7 +97,7 @@ hl.bind(mod .. " + C", dsp.exec_cmd(helper .. "clipboard"))
 hl.bind(mod .. " + P", dsp.exec_cmd(helper .. "password"))
 hl.bind(mod .. " + CTRL + L", dsp.exec_cmd(helper .. "lock"))
 hl.bind(mod .. " + CTRL + B", dsp.exec_cmd(bar .. "toggle"))
-hl.bind(mod .. " + SHIFT + Return", dsp.exec_cmd('xdg-open "$HOME"'))
+hl.bind(mod .. " + SHIFT + Return", dsp.exec_cmd(app .. 'xdg-open "$HOME"'))
 hl.bind(mod .. " + SHIFT + C", dsp.exec_cmd(helper .. "reload"))
 hl.bind(mod .. " + F", dsp.window.fullscreen())
 hl.bind(mod .. " + SHIFT + Space", dsp.window.float({ action = "toggle" }))
@@ -166,8 +171,8 @@ local repeated_media = {
     { "XF86AudioLowerVolume", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" },
     { "XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" },
     { "XF86AudioMicMute", "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle" },
-    { "XF86MonBrightnessUp", "brightnessctl -e4 -n2 set 5%+" },
-    { "XF86MonBrightnessDown", "brightnessctl -e4 -n2 set 5%-" },
+    { "XF86MonBrightnessUp", "~/.local/bin/dotfiles-brightness up" },
+    { "XF86MonBrightnessDown", "~/.local/bin/dotfiles-brightness down" },
 }
 for _, binding in ipairs(repeated_media) do
     hl.bind(binding[1], dsp.exec_cmd(binding[2]), { locked = true, repeating = true })
@@ -182,6 +187,12 @@ for _, binding in ipairs(media) do
     hl.bind(binding[1], dsp.exec_cmd(binding[2]), { locked = true })
 end
 
+-- Keep Firefox bright when another window has focus.
+hl.window_rule({
+    name = "firefox-no-inactive-dimming",
+    match = { class = "^firefox$" },
+    no_dim = true,
+})
 hl.window_rule({
     name = "suppress-maximize-events",
     match = { class = ".*" },
@@ -198,5 +209,4 @@ hl.window_rule({
     move = "20 monitor_h-120",
     float = true,
 })
-hl.layer_rule({ name = "vicinae-blur", match = { namespace = "vicinae" }, blur = true, ignore_alpha = 0 })
 hl.layer_rule({ name = "vicinae-no-animation", match = { namespace = "vicinae" }, no_anim = true })

@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Route brightness keys to the active ASUS OLED or internal laptop panel."""
+import fcntl
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+def main(action):
+    if action not in ('up', 'down'):
+        raise ValueError('Usage: dotfiles-brightness {up|down}')
+    runtime = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}')) / 'dotfiles'
+    runtime.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with (runtime / 'brightness-key.lock').open('a') as lock:
+        try:
+            # DDC is slower than keyboard repeat. Drop overlapping repeats rather
+            # than building a queue that continues changing brightness afterward.
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return
+        result = subprocess.run(['hyprctl', '-j', 'monitors'], check=True,
+                                text=True, capture_output=True, timeout=5)
+        monitors = json.loads(result.stdout)
+        active = [m for m in monitors if not m.get('disabled', False)]
+        if any(m.get('model') == 'PG32UCDM3' for m in active):
+            command = ['dotfiles-oled', action]
+        elif any(m.get('name', '').startswith('eDP-') for m in active):
+            command = ['brightnessctl', '--class', 'backlight', '-e4', '-n2',
+                       'set', '5%+' if action == 'up' else '5%-']
+        else:
+            raise RuntimeError('No supported active display; brightness was not changed.')
+        # A monitor-control failure must not change the inactive internal panel.
+        subprocess.run(command, check=True, timeout=40)
+
+
+if __name__ == '__main__':
+    try:
+        main(sys.argv[1] if len(sys.argv) == 2 else '')
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+        print(f'dotfiles-brightness: {error}', file=sys.stderr)
+        sys.exit(1)

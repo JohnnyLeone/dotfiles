@@ -1,0 +1,4 @@
+# Hyprland-specific environment; UWSM exports and cleans up these variables.
+export HYPRCURSOR_SIZE=24
+# Let launch/logout helpers distinguish this session from plain Hyprland.
+export DOTFILES_UWSM_SESSION=1

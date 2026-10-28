@@ -83,9 +83,9 @@ if active.get("address"):
     password)
         # The current password manager is Bitwarden; its extension is optional.
         if command -v bitwarden-desktop >/dev/null 2>&1; then
-            exec bitwarden-desktop
+            exec "${HOME}/.local/bin/dotfiles-app" bitwarden-desktop
         elif command -v bitwarden >/dev/null 2>&1; then
-            exec bitwarden
+            exec "${HOME}/.local/bin/dotfiles-app" bitwarden
         fi
         exec vicinae toggle
         ;;
@@ -93,10 +93,17 @@ if active.get("address"):
         need mpv
         need wl-paste
         uri=$(wl-paste --no-newline) || exit 0
-        [[ -n $uri ]] && exec mpv -- "$uri"
+        [[ -n $uri ]] && exec "${HOME}/.local/bin/dotfiles-app" mpv -- "$uri"
         ;;
     exit)
         # The first shortcut enters a confirmation submap; Enter reaches here.
+        if [[ ${DOTFILES_UWSM_SESSION:-0} == 1 ]]; then
+            need uwsm
+            if command -v hyprshutdown >/dev/null 2>&1; then
+                hyprshutdown --no-exit --no-fork
+            fi
+            exec uwsm stop
+        fi
         if command -v hyprshutdown >/dev/null 2>&1; then
             exec hyprshutdown
         fi

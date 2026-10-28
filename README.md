@@ -42,92 +42,28 @@ and SSH logins too, run `chsh -s /usr/bin/zsh`, then log in again.
 | `.dockerfunc` | Three portable container helpers; no desktop-app wrappers |
 | `.vimrc`, `.tmux.conf`, `.gitconfig`, `gitignore`, `.inputrc` | Editor, terminal, Git, and readline preferences |
 | `bin/` | Desktop helpers and reusable command-line tools |
-| `.gnupg/`, `.irssi/`, `.rainbow_config.json` | Optional preferences, themes, and plugins |
+| `.config/uwsm/`, `.config/systemd/user/` | Session environment and desktop services |
+| `.gnupg/` | Optional GnuPG display and agent preferences |
 | `scripts/`, `docs/` | Installer, checks, utility guide, and cleanup decisions |
 
-## Hyprland shortcuts
+## Desktop
 
-Super is the Windows/logo key.
-
-| Shortcut | Action |
-| --- | --- |
-| Super+Enter (also Super+Q) | Kitty terminal |
-| Super+Shift+Q | Close window |
-| Super+D | Vicinae launcher |
-| Super+C | Vicinae clipboard history |
-| Super+P | Current Bitwarden app |
-| Super+H/J/K/L or arrows | Focus left/down/up/right |
-| Super+Shift+H/J/K/L or arrows | Move window |
-| Super+1…0 | Workspaces 1…10 |
-| Super+Shift+1…0 | Move window to workspace |
-| Super+B / Super+V | Next split right / below |
-| Super+E | Toggle split direction |
-| Super+F | Fullscreen |
-| Super+Shift+Space | Toggle floating |
-| Super+Space | Switch focus between tiled and floating windows |
-| Super+W | Toggle a tabbed window group |
-| Super+S or Super+Tab | Next window in group |
-| Super+Shift+Tab | Previous window in group |
-| Super+Shift+S | Pin a floating window |
-| Super+R, then H/J/K/L or arrows | Resize; Enter/Escape finishes |
-| Super+Minus / Super+Shift+Minus | Show scratchpad / send window there |
-| Super+Ctrl+L | Lock and pause media |
-| Super+Ctrl+B | Hide/show ashell |
-| Super+Shift+Enter | Open home directory in the default file manager |
-| Super+Shift+C | Validate and reload Hyprland |
-| Super+Shift+E | Logout confirmation; Enter confirms, Escape cancels |
-| Super+Ctrl+Shift+Left/Right | Move workspace to another monitor |
-| Print / Shift+Print / Super+Print | Screenshot selection / all screens / active window |
-| Super+T | Play the clipboard URL with mpv |
-| Alt+Shift | Switch EU/German keyboard layouts; Caps still acts as Escape |
-
-Screenshots are saved under the XDG Pictures directory in `Screenshots/` and copied
-to the clipboard. Volume, brightness, media keys, gestures, and mouse dragging are
-retained. Clipboard history uses Vicinae's [documented deeplink](https://docs.vicinae.com/deeplinks).
-
-Hyprland groups approximate tabbed containers; dwindle has no exact equivalent
-for i3 stacked containers or parent-container focus. Edit
-`.config/hypr/hyprland.lua`, then use Super+Shift+C to validate and reload.
-Hypridle and hyprlock are separate programs and retain their `.conf` format.
-
-## Status bar and OLED protection
-
-Ashell shows CPU/RAM, CPU temperature, root disk usage, network IP, GPU usage,
-media, volume, network name, battery/VPN/tray controls, and weather in Celsius.
-Click the EU/DE layout label to switch layouts. The mode indicator appears during
-resize/logout confirmation. The screenshot button uses left/middle/right click
-for all screens / active window / a selection. Right-click the clock to toggle seconds.
-
-| Idle time | Action |
-| --- | --- |
-| 15 seconds without pointer activity | Hide the pointer |
-| 60 seconds without input | Hide ashell; restore on activity |
-| 180 seconds without input | Lock |
-| 240 seconds without input | Turn displays off; wake on activity |
-
-Video/presentation inhibitors prevent automatic locking and display-off. The
-bar-only timeout still hides static UI, and preserves a manually hidden bar.
-Use Super+Ctrl+B to control visibility. Black desktop/terminal backgrounds,
-dimmer bar text, and a subdued lock-screen clock reduce static bright content.
-Kitty applies config changes to new terminals or after Ctrl+Shift+F5.
-
-Use moderate SDR brightness and the monitor's own OLED Care protections, including
-screen movement, logo dimming, proximity detection, and automatic pixel cleaning.
-Keep power connected while cleaning runs. These measures reduce exposure rather
-than guarantee prevention. [ASUS model guidance](https://rog.asus.com/us/monitors/27-to-31-5-inches/rog-swift-oled-pg32ucdm-gen3-pg32ucdm3/).
+[Desktop guide](docs/desktop.md): Hyprland shortcuts, UWSM service setup,
+brightness keys, OLED idle timers, and recovery to a plain Hyprland session.
 
 ## Shell and editor
 
 Zsh keeps `steeef`, vi editing, fzf history, completions, and syntax highlighting.
 Optional NVM/RVM and language integrations load when installed. Vim/Neovim share
 comma leader, `jj` for Escape, relative numbers, four-space indentation, and the
-editing/Git plugins installed by `make vim-plugins`. Tmux uses Ctrl+Z as prefix,
+editing/Git plugins installed by `make vim-plugins`. Multiple selections use
+Neovim's `multicursor.nvim` with Ctrl+I / Ctrl+Y / Ctrl+B / Escape. Tmux uses Ctrl+Z as prefix,
 `|`/`-` splits, vi copy mode, and numbering from 1.
 
 The useful Git/GitHub, VM, GPG, container, password-menu, and keyboard-light tools
 were retained and adapted. See [the utility guide](docs/tools.md) for commands,
-optional dependencies, and preview/apply behavior. IRC themes/plugins are retained
-for optional use, independent of the window manager.
+optional dependencies, and preview/apply behavior. The unused Irssi and
+Rainbowstream configurations were archived outside the repository.
 
 Local overrides: `~/.extra`, `~/.gitconfig.local`, `~/.tmux.conf.local`, and
 `~/.config/kitty/local.conf`. The historical Git identity is retained; set signing
@@ -146,5 +82,5 @@ hyprctl reload
 
 Restoration refuses to overwrite later replacement files. The cleanup recovery
 copy, including the complete pre-cleanup repo snapshot, is at
-`~/.local/state/dotfiles/backups/20261026-234714-cleanup/`.
+`~/.local/state/dotfiles/backups/20261028-201644-lean-cleanup/`.
 [Cleanup decisions](docs/cleanup.md) explain what was removed and what was retained.

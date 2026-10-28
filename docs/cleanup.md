@@ -1,5 +1,34 @@
 # Cleanup review
 
+## 2026-10-28 follow-up
+
+- Archived the unused Irssi setup (19 files) and Rainbowstream configuration, as
+  requested, outside this repository. No installed applications were uninstalled.
+- Removed deprecated GTK3 toolbar/image settings (the toolbar setting is
+  [ignored by GTK](https://docs.gtk.org/gtk3/property.Settings.gtk-toolbar-style.html)).
+  Theme, fonts, and cursor remain.
+- Moved Vicinae rounding to its current launcher-window property.
+- Replaced explicitly deprecated vim-multiple-cursors with Neovim-native
+  [multicursor.nvim](https://github.com/jake-stewart/multicursor.nvim), retaining
+  Ctrl+I for selection, Ctrl+Y for previous, Ctrl+B for skip, and Escape to exit.
+- Removed unused Syntastic configuration, NeoComplete hooks, old Go GOPATH detection,
+  duplicate editor mappings/options, a per-startup uname subprocess, and OS 9 line endings.
+- Git pull aliases now honor the current branch upstream instead of assuming master.
+  The unreleased comparison now uses the nearest reachable tag, not lexical tag order.
+  Removed the old OS X-specific trustctime workaround.
+- Trimmed commented lock-screen examples and disabled animation definitions.
+- Moved detailed desktop instructions to desktop.md to keep the README concise.
+- Retained clipboard helpers, container/VM tools, signing preferences, and optional
+  language-manager loading: their age or an absent optional dependency is not
+  evidence that the workflow is obsolete. Kept the deliberate plain-Hyprland fallback.
+
+Recovery snapshot (includes all uncommitted work from before this pass):
+`~/.local/state/dotfiles/backups/20261028-201644-lean-cleanup/repository-before-cleanup.tar.gz`.
+Archived paths are in its `removed/` directory, with reasons in `removal-review.json`.
+Extract individual files from the snapshot rather than overwriting later changes.
+
+## 2026-10-26 initial review
+
 Reviewed on 2026-10-26 for the current Arch/Hyprland desktop.
 Age or a missing optional dependency alone was not a reason to remove a tool.
 

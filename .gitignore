@@ -17,18 +17,12 @@ __pycache__/
 .tmux.conf.local
 .config/kitty/local.conf
 .uuid
-.rainbow_oauth
+.rainbow*
 
 # Keep GnuPG preferences, never keyrings or key material
 .gnupg/*
 !.gnupg/gpg.conf
 !.gnupg/gpg-agent.conf
 
-# Keep reusable IRC themes/plugins, not identities, servers, or runtime state
-.irssi/away.log
-.irssi/config*
-.irssi/nicknames_whitelist
-.irssi/otr
-.irssi/saved_colors
-.irssi/scripts/autorun/blocker.pl
-.irssi/startup
+# Archived IRC setup; keep future local account/runtime data out of this repo.
+.irssi/

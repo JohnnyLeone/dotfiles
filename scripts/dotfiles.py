@@ -13,9 +13,15 @@ FILES = [
     '.config/hypr/hyprland.lua', '.config/hypr/hyprlock.conf',
     '.config/hypr/hypridle.conf', '.config/ashell/config.toml', '.config/ashell/gpu.py',
     '.config/vicinae/settings.json', '.config/gtk-3.0/settings.ini', '.gtkrc-2.0',
+    '.config/uwsm/env', '.config/uwsm/env-hyprland',
+    '.config/systemd/user/ashell.service.d/uwsm.conf',
+    '.config/systemd/user/vicinae.service.d/uwsm.conf',
+    '.config/systemd/user/hypridle.service.d/uwsm.conf',
+    '.config/systemd/user/udiskie.service',
 ]
 BINS = [
-    'dotfiles-hypr', 'dotfiles-bar', 'check-kconfig', 'cleanup-non-running-images',
+    'dotfiles-hypr', 'dotfiles-bar', 'dotfiles-oled', 'dotfiles-brightness', 'dotfiles-app',
+    'check-kconfig', 'cleanup-non-running-images',
     'createvm', 'gitdate', 'keyboard-backlight', 'keysign', 'openprs', 'passmenu',
     'update-mirrors', 'updateforks',
 ]
