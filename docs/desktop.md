@@ -62,6 +62,28 @@ cursors, damage tracking, and variable frame rendering remain enabled. Keep
 the game-only auto setting `2` is retained. This is an eligibility result, not
 a measured FPS improvement. 4K/120 Hz and 1.333333 scaling remain unchanged.
 
+## Dark appearance
+
+GTK 3 and GTK 4 use their built-in Adwaita dark theme. Set the matching desktop
+preferences once; they persist in dconf and are exposed to applications through
+the GTK settings portal:
+
+```sh
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
+```
+
+Install `qt5ct` and `qt6ct` with `sudo pacman -S --needed qt5ct qt6ct` for Qt 5
+and Qt 6 dark palettes. Both use Fusion with the packaged darker color scheme
+and portal file dialogs through `QT_QPA_PLATFORMTHEME=qt5ct` (qt6ct also accepts
+this name), set in the UWSM environment and the plain Hyprland fallback.
+Restart applications after changing this
+environment, or log out and back in to cover every launcher and service.
+Libadwaita and sandboxed applications receive the dark preference through the
+existing settings portal. Applications with their own appearance setting need
+to use System or Dark; applications that do not support dark appearance cannot
+be made dark by a desktop preference alone.
+
 ## UWSM sessions
 
 Ly remains the login manager. Install `uwsm` with `sudo pacman -S --needed uwsm`,

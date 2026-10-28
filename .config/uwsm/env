@@ -1,6 +1,8 @@
 # Shared graphical-session environment, loaded before services and applications.
 export XCURSOR_THEME=Adwaita
 export XCURSOR_SIZE=24
+# qt6ct also accepts the qt5ct key, so this covers both Qt versions.
+export QT_QPA_PLATFORMTHEME=qt5ct
 # Launchers and systemd services must also find the installed dotfiles helpers.
 case ":$PATH:" in
     *":$HOME/.local/bin:"*) ;;

@@ -37,7 +37,8 @@ and SSH logins too, run `chsh -s /usr/bin/zsh`, then log in again.
 | `.config/hypr/` | Native Lua compositor config, hypridle, hyprlock |
 | `.config/ashell/` | Status bar and AMD GPU usage helper |
 | `.config/kitty/`, `.config/nvim/`, `.config/vicinae/` | Current application settings |
-| `.config/gtk-3.0/`, `.gtkrc-2.0` | Adwaita, Noto Sans, and cursor settings for GTK apps |
+| `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0` | Dark Adwaita plus shared GTK font/cursor settings |
+| `.config/qt5ct/`, `.config/qt6ct/` | Dark Qt palettes and portal file dialogs |
 | `.config/pipewire/` | Soundcraft Ui24R main, music, voice outputs, mono mic, and AirPlay discovery |
 | `.zshrc`, `.aliases`, `.functions`, `.exports`, `.path` | Shell, completion, aliases, utilities |
 | `.dockerfunc` | Three portable container helpers; no desktop-app wrappers |
